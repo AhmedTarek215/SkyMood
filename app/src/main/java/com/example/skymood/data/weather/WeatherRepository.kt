@@ -11,7 +11,7 @@ class WeatherRepository(context: Context) {
     private val _weatherState = MutableStateFlow<WeatherResponse?>(null)
     val weatherState: StateFlow<WeatherResponse?> = _weatherState
 
-    suspend fun fetchWeather(lat: Double, lon: Double, apiKey: String) {
+    suspend fun fetchWeather(lat: Double, lon: Double, apiKey: String, unit: String, lang: String) {
         try {
             val weatherData = weatherRemoteDataSource.getForecast(lat, lon, apiKey, "metric", "en")
             _weatherState.emit(weatherData)

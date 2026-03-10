@@ -80,4 +80,10 @@ dependencies {
     implementation ("androidx.compose.runtime:runtime-livedata:$compose_version")
     implementation ("com.github.bumptech.glide:compose:1.0.0-beta01")
 
+    // Navigation Compose
+    implementation("androidx.navigation:navigation-compose:2.7.7")
+
+    // Coil for Image Loading in Compose
+    implementation("io.coil-kt:coil-compose:2.6.0")
+
 }
