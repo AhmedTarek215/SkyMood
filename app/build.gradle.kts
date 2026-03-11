@@ -86,4 +86,15 @@ dependencies {
     // Coil for Image Loading in Compose
     implementation("io.coil-kt:coil-compose:2.6.0")
 
+    // Location Services (GPS)
+    implementation("com.google.android.gms:play-services-location:21.3.0")
+
+    // OSMDroid (OpenStreetMap)
+    implementation("org.osmdroid:osmdroid-android:6.1.18")
+
+    // Accompanist Permissions
+    implementation("com.google.accompanist:accompanist-permissions:0.34.0")
+
+    // Coroutines support for Play Services Tasks (.await() extension)
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.8.0")
 }

@@ -16,7 +16,7 @@ data class ForecastItem(
     val weather: List<WeatherDescription>,
     val wind: WindData,
     val clouds: CloudsData,
-    val dt_txt: String // Format: "2026-03-09 12:00:00"
+    val dt_txt: String
 )
 
 data class MainData(
