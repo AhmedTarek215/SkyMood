@@ -34,6 +34,9 @@ class HomeViewModel(
     private val _errorMessage = MutableStateFlow<String?>(null)
     val errorMessage: StateFlow<String?> = _errorMessage
 
+    private val _isOffline = MutableStateFlow(false)
+    val isOffline: StateFlow<Boolean> = _isOffline
+
     fun setLocation(lat: Double, lon: Double) {
         _location.value = Pair(lat, lon)
         fetchWeather(lat, lon)
@@ -98,7 +101,8 @@ class HomeViewModel(
         viewModelScope.launch {
             _isLoading.value = true
             try {
-                repository.fetchWeather(lat, lon, Constants.WEATHER_API_KEY, "metric", "en")
+                val offline = repository.fetchWeather(lat, lon, Constants.WEATHER_API_KEY, "metric", "en")
+                _isOffline.value = offline
             } catch (e: Exception) {
                 _errorMessage.value = "Weather fetch error: ${e.message}"
             }

@@ -68,6 +68,7 @@ fun HomeScreen(
     val errorMessage by viewModel.errorMessage.collectAsState()
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
+    val isOffline by viewModel.isOffline.collectAsState()
 
     var showLocationDialog by remember { mutableStateOf(false) }
 
@@ -240,7 +241,8 @@ fun HomeScreen(
                         WeatherContentView(
                             weatherData = weatherData!!,
                             onChangeLocation = { requestOrShowDialog() },
-                            pullRefreshState = pullRefreshState
+                            pullRefreshState = pullRefreshState,
+                            isOffline = isOffline
                         )
                     }
                 }
@@ -249,15 +251,25 @@ fun HomeScreen(
     }
 }
 
-
 @OptIn(androidx.compose.material3.ExperimentalMaterial3Api::class)
 @Composable
 private fun WeatherContentView(
     weatherData: WeatherResponse,
     onChangeLocation: () -> Unit,
-    pullRefreshState: androidx.compose.material3.pulltorefresh.PullToRefreshState
+    pullRefreshState: androidx.compose.material3.pulltorefresh.PullToRefreshState,
+    isOffline: Boolean
 ) {
     val scrollState = rememberScrollState()
+    val snackbarHostState = remember { SnackbarHostState() }
+    
+    LaunchedEffect(isOffline) {
+        if (isOffline) {
+            snackbarHostState.showSnackbar(
+                message = "You are currently offline. Showing last known weather.",
+                duration = SnackbarDuration.Long
+            )
+        }
+    }
     val currentForecast = weatherData.list.firstOrNull()
     val cityName = weatherData.city.name
     val temp = currentForecast?.main?.temp?.toInt() ?: 0
@@ -439,6 +451,11 @@ private fun WeatherContentView(
         PullToRefreshContainer(
             modifier = Modifier.align(Alignment.TopCenter),
             state = pullRefreshState,
+        )
+        
+        SnackbarHost(
+            hostState = snackbarHostState,
+            modifier = Modifier.align(Alignment.BottomCenter).padding(bottom = 16.dp)
         )
     }
 }

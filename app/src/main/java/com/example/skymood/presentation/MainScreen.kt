@@ -24,6 +24,9 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.skymood.R
 import com.example.skymood.data.weather.WeatherRepository
+import com.example.skymood.data.database.WeatherDatabase
+import com.example.skymood.data.weather.datasource.local.WeatherLocalDataSource
+import com.example.skymood.data.weather.datasource.remote.WeatherRemoteDataSource
 import com.example.skymood.presentation.home.HomeScreen
 import com.example.skymood.presentation.home.viewmodel.HomeViewModel
 import com.example.skymood.presentation.home.viewmodel.HomeViewModelFactory
@@ -41,7 +44,12 @@ fun MainScreen() {
     val navController = rememberNavController()
     val context = LocalContext.current
     val application = context.applicationContext as android.app.Application
-    val repository = remember { WeatherRepository(context) }
+    val repository = remember { 
+        val db = WeatherDatabase.getDatabase(context)
+        val localDataSource = WeatherLocalDataSource(db.weatherDao())
+        val remoteDataSource = WeatherRemoteDataSource()
+        WeatherRepository(remoteDataSource, localDataSource) 
+    }
     val homeViewModel: HomeViewModel = viewModel(factory = HomeViewModelFactory(repository, application))
 
     Scaffold(
