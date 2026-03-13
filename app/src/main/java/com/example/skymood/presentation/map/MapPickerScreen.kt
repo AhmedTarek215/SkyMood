@@ -6,9 +6,15 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.clickable
+import androidx.compose.ui.zIndex
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
@@ -29,12 +35,17 @@ import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.MapEventsOverlay
 import org.osmdroid.views.overlay.Marker
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MapPickerScreen(
+    viewModel: MapPickerViewModel,
     onLocationSelected: (lat: Double, lon: Double) -> Unit,
     onBack: () -> Unit
 ) {
     val context = LocalContext.current
+    val searchQuery by viewModel.searchQuery.collectAsState()
+    val searchResults by viewModel.searchResults.collectAsState()
+    var searchActive by remember { mutableStateOf(false) }
     var selectedLat by remember { mutableDoubleStateOf(30.0444) } 
     var selectedLon by remember { mutableDoubleStateOf(31.2357) }
     var hasSelection by remember { mutableStateOf(false) }
@@ -97,6 +108,60 @@ fun MapPickerScreen(
                 color = Color.White.copy(alpha = 0.7f),
                 fontSize = 14.sp
             )
+
+            // Search Bar
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 8.dp)
+                    .zIndex(1f)
+            ) {
+                SearchBar(
+                    query = searchQuery,
+                    onQueryChange = { viewModel.onSearchQueryChanged(it) },
+                    onSearch = { searchActive = false },
+                    active = searchActive,
+                    onActiveChange = { searchActive = it },
+                    placeholder = { Text("Search for a city") },
+                    leadingIcon = { Icon(Icons.Default.Search, contentDescription = "Search Icon") },
+                    trailingIcon = {
+                        if (searchActive || searchQuery.isNotEmpty()) {
+                            IconButton(onClick = {
+                                if (searchQuery.isNotEmpty()) {
+                                    viewModel.clearSearch()
+                                } else {
+                                    searchActive = false
+                                }
+                            }) {
+                                Icon(Icons.Default.Close, contentDescription = "Clear")
+                            }
+                        }
+                    },
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    LazyColumn(
+                        modifier = Modifier.fillMaxWidth(),
+                        contentPadding = PaddingValues(16.dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        items(searchResults) { result ->
+                            ListItem(
+                                headlineContent = { Text(result.name) },
+                                supportingContent = { Text("${result.state ?: ""} ${result.country}") },
+                                modifier = Modifier
+                                    .clickable {
+                                        selectedLat = result.lat
+                                        selectedLon = result.lon
+                                        hasSelection = true
+                                        viewModel.clearSearch()
+                                        searchActive = false
+                                        mapViewRef.value?.controller?.setCenter(GeoPoint(result.lat, result.lon))
+                                    }
+                            )
+                        }
+                    }
+                }
+            }
 
             Spacer(modifier = Modifier.height(8.dp))
 

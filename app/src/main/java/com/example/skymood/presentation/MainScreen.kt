@@ -9,6 +9,8 @@ import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -18,6 +20,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
+import androidx.navigation.navArgument
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -31,6 +35,14 @@ import com.example.skymood.presentation.home.HomeScreen
 import com.example.skymood.presentation.home.viewmodel.HomeViewModel
 import com.example.skymood.presentation.home.viewmodel.HomeViewModelFactory
 import com.example.skymood.presentation.map.MapPickerScreen
+import com.example.skymood.presentation.map.MapPickerViewModel
+import com.example.skymood.presentation.map.MapPickerViewModelFactory
+import com.example.skymood.presentation.favorites.view.FavoritesScreen
+import com.example.skymood.presentation.favorites.view.FavoriteForecastScreen
+import com.example.skymood.presentation.favorites.viewmodel.FavoritesViewModel
+import com.example.skymood.presentation.favorites.viewmodel.FavoritesViewModelFactory
+import com.example.skymood.presentation.favorites.viewmodel.FavoriteForecastViewModel
+import com.example.skymood.presentation.favorites.viewmodel.FavoriteForecastViewModelFactory
 import com.example.skymood.presentation.settings.view.SettingsScreen
 import com.example.skymood.presentation.settings.viewmodel.SettingsViewModel
 import com.example.skymood.presentation.settings.viewmodel.SettingsViewModelFactory
@@ -60,12 +72,17 @@ fun MainScreen() {
     }
     val homeViewModel: HomeViewModel = viewModel(factory = HomeViewModelFactory(repository, application, preferencesManager))
     val settingsViewModel: SettingsViewModel = viewModel(factory = SettingsViewModelFactory(preferencesManager))
+    val favoritesViewModel: FavoritesViewModel = viewModel(factory = FavoritesViewModelFactory(repository, preferencesManager))
+    val mapPickerViewModel: MapPickerViewModel = viewModel(factory = MapPickerViewModelFactory(repository))
+    val favoriteForecastViewModel: FavoriteForecastViewModel = viewModel(factory = FavoriteForecastViewModelFactory(repository, preferencesManager))
+
+    var mapPickerDestination by remember { mutableStateOf("home") }
 
     Scaffold(
         bottomBar = {
             val navBackStackEntry by navController.currentBackStackEntryAsState()
             val currentRoute = navBackStackEntry?.destination?.route
-            if (currentRoute != "map_picker") {
+            if (currentRoute != "map_picker" && currentRoute?.startsWith("favorite_forecast") != true) {
                 BottomNavigationBar(navController = navController)
             }
         },
@@ -80,14 +97,20 @@ fun MainScreen() {
                 HomeScreen(
                     viewModel = homeViewModel,
                     onNavigateToMap = {
+                        mapPickerDestination = "home"
                         navController.navigate("map_picker")
                     }
                 )
             }
             composable("map_picker") {
                 MapPickerScreen(
+                    viewModel = mapPickerViewModel,
                     onLocationSelected = { lat, lon ->
-                        homeViewModel.setLocation(lat, lon)
+                        if (mapPickerDestination == "favorites") {
+                            favoritesViewModel.fetchAndAddFavorite(lat, lon)
+                        } else {
+                            homeViewModel.setLocation(lat, lon, isHomeLocation = true)
+                        }
                     },
                     onBack = {
                         navController.popBackStack()
@@ -95,7 +118,34 @@ fun MainScreen() {
                 )
             }
             composable(Screen.Alerts.route) { Text("Alerts Screen") }
-            composable(Screen.Favorites.route) { Text("Favorites Screen") }
+            composable(Screen.Favorites.route) { 
+                FavoritesScreen(
+                    viewModel = favoritesViewModel,
+                    onNavigateToForecast = { lat, lon ->
+                        navController.navigate("favorite_forecast/$lat/$lon")
+                    },
+                    onNavigateToAddFavorite = {
+                        mapPickerDestination = "favorites"
+                        navController.navigate("map_picker")
+                    }
+                )
+            }
+            composable(
+                route = "favorite_forecast/{lat}/{lon}",
+                arguments = listOf(
+                    navArgument("lat") { type = NavType.FloatType },
+                    navArgument("lon") { type = NavType.FloatType }
+                )
+            ) { backStackEntry ->
+                val lat = backStackEntry.arguments?.getFloat("lat")?.toDouble() ?: 0.0
+                val lon = backStackEntry.arguments?.getFloat("lon")?.toDouble() ?: 0.0
+                FavoriteForecastScreen(
+                    lat = lat,
+                    lon = lon,
+                    viewModel = favoriteForecastViewModel,
+                    onBack = { navController.popBackStack() }
+                )
+            }
             composable(Screen.Settings.route) { 
                 SettingsScreen(viewModel = settingsViewModel) 
             }
