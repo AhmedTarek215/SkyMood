@@ -7,9 +7,7 @@ plugins {
 
 android {
     namespace = "com.example.skymood"
-    compileSdk {
-        version = release(36)
-    }
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "com.example.skymood"
@@ -54,37 +52,42 @@ dependencies {
     androidTestImplementation(libs.espresso.core)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
-    implementation(libs.androidx.lifecycle.runtime.ktx)
-    implementation(libs.androidx.activity.compose)
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.ui)
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
+    
+    // Retrofit & Gson
     implementation("com.squareup.retrofit2:retrofit:3.0.0")
     implementation("com.squareup.retrofit2:converter-gson:2.9.0")
+    
+    // Glide (if needed)
     implementation("com.github.bumptech.glide:glide:5.0.5")
+    implementation ("com.github.bumptech.glide:compose:1.0.0-beta01")
+    
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose-android:2.8.7")
+    
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
-    val room_version = "2.8.4"
+    
+    // Room
+    val room_version = "2.6.1"
     implementation("androidx.room:room-ktx:${room_version}")
-    implementation("androidx.room:room-runtime:$room_version")
-    //annotationProcessor("androidx.room:room-compiler:$room_version")
-    ksp("androidx.room:room-compiler:$room_version")
+    implementation("androidx.room:room-runtime:${room_version}")
+    ksp("androidx.room:room-compiler:${room_version}")
 
-    //LiveData & Compose
-    val compose_version = "1.0.0"
+    // LiveData & Compose
+    val compose_version = "1.7.5"
     implementation ("androidx.compose.runtime:runtime-livedata:$compose_version")
-    implementation ("com.github.bumptech.glide:compose:1.0.0-beta01")
 
     // Navigation Compose
-    implementation("androidx.navigation:navigation-compose:2.7.7")
+    implementation("androidx.navigation:navigation-compose:2.8.3")
 
     // Coil for Image Loading in Compose
-    implementation("io.coil-kt:coil-compose:2.6.0")
+    implementation("io.coil-kt:coil-compose:2.7.0")
 
     // Location Services (GPS)
     implementation("com.google.android.gms:play-services-location:21.3.0")
@@ -93,8 +96,11 @@ dependencies {
     implementation("org.osmdroid:osmdroid-android:6.1.18")
 
     // Accompanist Permissions
-    implementation("com.google.accompanist:accompanist-permissions:0.34.0")
+    implementation("com.google.accompanist:accompanist-permissions:0.36.0")
 
-    // Coroutines support for Play Services Tasks (.await() extension)
+    // Coroutines support for Play Services Tasks
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.8.0")
+    
+    // DataStore Preferences
+    implementation("androidx.datastore:datastore-preferences:1.1.1")
 }
