@@ -40,9 +40,12 @@ class HomeViewModel(
     private val _isOffline = MutableStateFlow(false)
     val isOffline: StateFlow<Boolean> = _isOffline
 
-    fun setLocation(lat: Double, lon: Double) {
+    private val _isCurrentLocationHome = MutableStateFlow(true)
+
+    fun setLocation(lat: Double, lon: Double, isHomeLocation: Boolean = true) {
         _location.value = Pair(lat, lon)
-        fetchWeather(lat, lon)
+        _isCurrentLocationHome.value = isHomeLocation
+        fetchWeather(lat, lon, isHomeLocation)
     }
 
     @SuppressLint("MissingPermission")
@@ -65,12 +68,14 @@ class HomeViewModel(
                     ).await()
                     if (location != null) {
                         _location.value = Pair(location.latitude, location.longitude)
-                        fetchWeather(location.latitude, location.longitude)
+                        _isCurrentLocationHome.value = true
+                        fetchWeather(location.latitude, location.longitude, true)
                     } else {
                         val last = fusedClient.lastLocation.await()
                         if (last != null) {
                             _location.value = Pair(last.latitude, last.longitude)
-                            fetchWeather(last.latitude, last.longitude)
+                            _isCurrentLocationHome.value = true
+                            fetchWeather(last.latitude, last.longitude, true)
                         } else {
                             _isLoading.value = false
                             _errorMessage.value = "Could not get GPS location. Please try again outside."
@@ -94,13 +99,13 @@ class HomeViewModel(
     fun refreshData() {
         val loc = _location.value
         if (loc != null) {
-            fetchWeather(loc.first, loc.second)
+            fetchWeather(loc.first, loc.second, _isCurrentLocationHome.value)
         } else {
             fetchGpsLocation()
         }
     }
 
-    private fun fetchWeather(lat: Double, lon: Double) {
+    private fun fetchWeather(lat: Double, lon: Double, isHomeLocation: Boolean = true) {
         viewModelScope.launch {
             _isLoading.value = true
             try {
@@ -113,7 +118,7 @@ class HomeViewModel(
                     else -> "standard"
                 }
 
-                val offline = repository.fetchWeather(lat, lon, Constants.WEATHER_API_KEY, unitParam, langPref)
+                val offline = repository.fetchWeather(lat, lon, Constants.WEATHER_API_KEY, unitParam, langPref, isHomeLocation)
                 _isOffline.value = offline
             } catch (e: Exception) {
                 _errorMessage.value = "Weather fetch error: ${e.message}"
