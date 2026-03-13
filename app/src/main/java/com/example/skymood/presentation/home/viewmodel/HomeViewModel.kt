@@ -15,11 +15,14 @@ import com.google.android.gms.location.Priority
 import com.google.android.gms.tasks.CancellationTokenSource
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
+import com.example.skymood.data.settings.SettingsPreferencesManager
 
 class HomeViewModel(
     private val repository: WeatherRepository,
+    private val preferencesManager: SettingsPreferencesManager,
     application: Application
 ) : AndroidViewModel(application) {
 
@@ -101,7 +104,16 @@ class HomeViewModel(
         viewModelScope.launch {
             _isLoading.value = true
             try {
-                val offline = repository.fetchWeather(lat, lon, Constants.WEATHER_API_KEY, "metric", "en")
+                val tempPref = preferencesManager.temperatureUnitStream.first()
+                val langPref = preferencesManager.appLanguageStream.first()
+                
+                val unitParam = when (tempPref) {
+                    "celsius" -> "metric"
+                    "fahrenheit" -> "imperial"
+                    else -> "standard"
+                }
+
+                val offline = repository.fetchWeather(lat, lon, Constants.WEATHER_API_KEY, unitParam, langPref)
                 _isOffline.value = offline
             } catch (e: Exception) {
                 _errorMessage.value = "Weather fetch error: ${e.message}"
@@ -113,10 +125,11 @@ class HomeViewModel(
 
 class HomeViewModelFactory(
     private val repository: WeatherRepository,
-    private val application: Application
+    private val application: Application,
+    private val preferencesManager: SettingsPreferencesManager
 ) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         @Suppress("UNCHECKED_CAST")
-        return HomeViewModel(repository, application) as T
+        return HomeViewModel(repository, preferencesManager, application) as T
     }
 }

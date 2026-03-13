@@ -15,7 +15,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.*
-import androidx.compose.material3.pulltorefresh.PullToRefreshContainer
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -34,7 +34,9 @@ import com.example.skymood.R
 import com.example.skymood.data.weather.model.WeatherResponse
 import com.example.skymood.presentation.home.viewmodel.HomeViewModel
 import com.google.android.gms.common.api.ResolvableApiException
+import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationServices
+import com.google.android.gms.location.LocationSettingsRequest
 import com.google.android.gms.location.Priority
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.launch
@@ -83,8 +85,8 @@ fun HomeScreen(
     LaunchedEffect(errorMessage) {
         if (errorMessage == "RESOLUTION_REQUIRED") {
             try {
-                val locationRequest = com.google.android.gms.location.LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, 5000L).build()
-                val builder = com.google.android.gms.location.LocationSettingsRequest.Builder().addLocationRequest(locationRequest)
+                val locationRequest = LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, 5000L).build()
+                val builder = LocationSettingsRequest.Builder().addLocationRequest(locationRequest)
                 val settingsClient = LocationServices.getSettingsClient(context)
                 val responseTask = settingsClient.checkLocationSettings(builder.build())
                 responseTask.addOnFailureListener { exception ->
@@ -154,15 +156,9 @@ fun HomeScreen(
     }
 
     val pullRefreshState = rememberPullToRefreshState()
-    if (pullRefreshState.isRefreshing) {
-        LaunchedEffect(Unit) {
-            viewModel.refreshData()
-            pullRefreshState.endRefresh()
-        }
-    }
 
     val screenState = when {
-        isLoading -> ScreenState.LOADING
+        isLoading && !pullRefreshState.isAnimating -> ScreenState.LOADING
         errorMessage != null && errorMessage != "RESOLUTION_REQUIRED" && weatherData == null && location == null -> ScreenState.ERROR
         weatherData != null -> ScreenState.WEATHER
         location != null && weatherData == null -> ScreenState.LOADING
@@ -172,11 +168,13 @@ fun HomeScreen(
     val currentCondition = weatherData?.list?.firstOrNull()?.weather?.firstOrNull()?.main ?: ""
     val dynamicBackground = remember(currentCondition) { getBackgroundGradient(currentCondition) }
 
-    Box(
+    PullToRefreshBox(
+        isRefreshing = isLoading,
+        onRefresh = { viewModel.refreshData() },
+        state = pullRefreshState,
         modifier = Modifier
             .fillMaxSize()
             .background(dynamicBackground)
-            .nestedScroll(pullRefreshState.nestedScrollConnection)
     ) {
         Crossfade(targetState = screenState, label = "home_crossfade") { state ->
             when (state) {
@@ -448,11 +446,6 @@ private fun WeatherContentView(
             }
         }
 
-        PullToRefreshContainer(
-            modifier = Modifier.align(Alignment.TopCenter),
-            state = pullRefreshState,
-        )
-        
         SnackbarHost(
             hostState = snackbarHostState,
             modifier = Modifier.align(Alignment.BottomCenter).padding(bottom = 16.dp)

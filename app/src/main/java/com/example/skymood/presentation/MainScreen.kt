@@ -31,6 +31,10 @@ import com.example.skymood.presentation.home.HomeScreen
 import com.example.skymood.presentation.home.viewmodel.HomeViewModel
 import com.example.skymood.presentation.home.viewmodel.HomeViewModelFactory
 import com.example.skymood.presentation.map.MapPickerScreen
+import com.example.skymood.presentation.settings.view.SettingsScreen
+import com.example.skymood.presentation.settings.viewmodel.SettingsViewModel
+import com.example.skymood.presentation.settings.viewmodel.SettingsViewModelFactory
+import com.example.skymood.data.settings.SettingsPreferencesManager
 
 sealed class Screen(val route: String, val title: String, val selectedIcon: Int, val unselectedIcon: Int) {
     object Home : Screen("home", "HOME", R.drawable.ic_home_blue, R.drawable.ic_home_grey)
@@ -44,13 +48,18 @@ fun MainScreen() {
     val navController = rememberNavController()
     val context = LocalContext.current
     val application = context.applicationContext as android.app.Application
+    
+    // Singletons & Managers
+    val preferencesManager = remember { SettingsPreferencesManager(context) }
+    
     val repository = remember { 
         val db = WeatherDatabase.getDatabase(context)
         val localDataSource = WeatherLocalDataSource(db.weatherDao())
         val remoteDataSource = WeatherRemoteDataSource()
         WeatherRepository(remoteDataSource, localDataSource) 
     }
-    val homeViewModel: HomeViewModel = viewModel(factory = HomeViewModelFactory(repository, application))
+    val homeViewModel: HomeViewModel = viewModel(factory = HomeViewModelFactory(repository, application, preferencesManager))
+    val settingsViewModel: SettingsViewModel = viewModel(factory = SettingsViewModelFactory(preferencesManager))
 
     Scaffold(
         bottomBar = {
@@ -87,7 +96,9 @@ fun MainScreen() {
             }
             composable(Screen.Alerts.route) { Text("Alerts Screen") }
             composable(Screen.Favorites.route) { Text("Favorites Screen") }
-            composable(Screen.Settings.route) { Text("Settings Screen") }
+            composable(Screen.Settings.route) { 
+                SettingsScreen(viewModel = settingsViewModel) 
+            }
         }
     }
 }
