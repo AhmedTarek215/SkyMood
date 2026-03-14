@@ -25,4 +25,22 @@ interface WeatherDao {
     @Query("SELECT * FROM favorites_table")
     fun getFavorites(): Flow<List<FavoriteEntity>>
 
+    // Alert operations
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertAlert(alertEntity: AlertEntity): Long
+
+    @Delete
+    suspend fun deleteAlert(alertEntity: AlertEntity)
+
+    @Query("DELETE FROM alerts_table WHERE id = :id")
+    suspend fun deleteAlertById(id: Int)
+
+    @Query("UPDATE alerts_table SET isEnabled = :isEnabled WHERE id = :id")
+    suspend fun updateAlertEnabled(id: Int, isEnabled: Boolean)
+
+    @Query("SELECT * FROM alerts_table")
+    fun getAlerts(): Flow<List<AlertEntity>>
+
+    @Query("SELECT * FROM alerts_table WHERE id = :id")
+    suspend fun getAlertById(id: Int): AlertEntity?
 }

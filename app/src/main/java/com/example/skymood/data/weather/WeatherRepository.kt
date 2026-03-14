@@ -6,6 +6,7 @@ import com.example.skymood.data.weather.datasource.remote.WeatherRemoteDataSourc
 import com.example.skymood.data.weather.model.GeocodingResponse
 import com.example.skymood.data.weather.model.WeatherResponse
 import com.example.skymood.data.database.FavoriteEntity
+import com.example.skymood.data.database.AlertEntity
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.Flow
@@ -24,13 +25,13 @@ class WeatherRepository(
                 localDataSource.saveWeather(weatherData)
             }
             _weatherState.emit(weatherData)
-            false // Not offline
+            return false
         } catch (e: Exception) {
             if (isHomeLocation) {
                 val cachedData = localDataSource.getCachedWeather()
                 _weatherState.emit(cachedData)
             }
-            true // Is offline (or error)
+            return true
         }
     }
 
@@ -60,5 +61,29 @@ class WeatherRepository(
 
     fun getFavorites(): Flow<List<FavoriteEntity>> {
         return localDataSource.getFavorites()
+    }
+
+    suspend fun insertAlert(alertEntity: AlertEntity): Long {
+        return localDataSource.insertAlert(alertEntity)
+    }
+
+    suspend fun deleteAlert(alertEntity: AlertEntity) {
+        localDataSource.deleteAlert(alertEntity)
+    }
+
+    suspend fun deleteAlertById(id: Int) {
+        localDataSource.deleteAlertById(id)
+    }
+
+    suspend fun updateAlertEnabled(id: Int, isEnabled: Boolean) {
+        localDataSource.updateAlertEnabled(id, isEnabled)
+    }
+
+    fun getAlerts(): Flow<List<AlertEntity>> {
+        return localDataSource.getAlerts()
+    }
+
+    suspend fun getAlertById(id: Int): AlertEntity? {
+        return localDataSource.getAlertById(id)
     }
 }
