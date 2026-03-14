@@ -8,10 +8,12 @@ import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -46,6 +48,9 @@ import com.example.skymood.presentation.favorites.viewmodel.FavoriteForecastView
 import com.example.skymood.presentation.settings.view.SettingsScreen
 import com.example.skymood.presentation.settings.viewmodel.SettingsViewModel
 import com.example.skymood.presentation.settings.viewmodel.SettingsViewModelFactory
+import com.example.skymood.presentation.weatheralerts.view.WeatherAlertsScreen
+import com.example.skymood.presentation.weatheralerts.viewmodel.WeatherAlertsViewModel
+import com.example.skymood.presentation.weatheralerts.viewmodel.WeatherAlertsViewModelFactory
 import com.example.skymood.data.settings.SettingsPreferencesManager
 
 sealed class Screen(val route: String, val title: String, val selectedIcon: Int, val unselectedIcon: Int) {
@@ -61,7 +66,6 @@ fun MainScreen() {
     val context = LocalContext.current
     val application = context.applicationContext as android.app.Application
     
-    // Singletons & Managers
     val preferencesManager = remember { SettingsPreferencesManager(context) }
     
     val repository = remember { 
@@ -75,6 +79,17 @@ fun MainScreen() {
     val favoritesViewModel: FavoritesViewModel = viewModel(factory = FavoritesViewModelFactory(repository, preferencesManager))
     val mapPickerViewModel: MapPickerViewModel = viewModel(factory = MapPickerViewModelFactory(repository))
     val favoriteForecastViewModel: FavoriteForecastViewModel = viewModel(factory = FavoriteForecastViewModelFactory(repository, preferencesManager))
+    val weatherAlertsViewModel: WeatherAlertsViewModel = viewModel(factory = WeatherAlertsViewModelFactory(repository, application))
+
+    val homeLocation by homeViewModel.location.collectAsState()
+    val weatherData by homeViewModel.weatherData.collectAsState()
+    
+    LaunchedEffect(homeLocation, weatherData) {
+        val cityName = weatherData?.city?.name ?: "Current Location"
+        homeLocation?.let { (lat, lon) ->
+            weatherAlertsViewModel.setCurrentLocation(lat, lon, cityName)
+        }
+    }
 
     var mapPickerDestination by remember { mutableStateOf("home") }
 
@@ -117,7 +132,9 @@ fun MainScreen() {
                     }
                 )
             }
-            composable(Screen.Alerts.route) { Text("Alerts Screen") }
+            composable(Screen.Alerts.route) {
+                WeatherAlertsScreen(viewModel = weatherAlertsViewModel)
+            }
             composable(Screen.Favorites.route) { 
                 FavoritesScreen(
                     viewModel = favoritesViewModel,
