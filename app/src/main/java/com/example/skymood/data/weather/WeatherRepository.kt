@@ -10,6 +10,10 @@ import com.example.skymood.data.database.AlertEntity
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.Dispatchers
 
 class WeatherRepository(
     private val remoteDataSource: WeatherRemoteDataSource,
@@ -17,6 +21,29 @@ class WeatherRepository(
 ) {
     private val _weatherState = MutableStateFlow<WeatherResponse?>(null)
     val weatherState: StateFlow<WeatherResponse?> = _weatherState
+
+    fun fetchWeatherFlow(
+        lat: Double,
+        lon: Double,
+        apiKey: String,
+        unit: String,
+        lang: String,
+        isHomeLocation: Boolean = true
+    ): Flow<WeatherResponse?> = flow {
+        val weatherData = remoteDataSource.getForecast(lat, lon, apiKey, unit, lang)
+        if (weatherData != null && isHomeLocation) {
+            localDataSource.saveWeather(weatherData)
+            _weatherState.emit(weatherData)
+        }
+        emit(weatherData)
+    }.catch { e ->
+        if (isHomeLocation) {
+            val cachedData = localDataSource.getCachedWeather()
+            emit(cachedData)
+        } else {
+            throw e
+        }
+    }.flowOn(Dispatchers.IO)
 
     suspend fun fetchWeather(lat: Double, lon: Double, apiKey: String, unit: String, lang: String, isHomeLocation: Boolean = true): Boolean {
         return try {

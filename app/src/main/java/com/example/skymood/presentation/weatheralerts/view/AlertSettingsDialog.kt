@@ -292,30 +292,33 @@ fun AlertTypeOption(
         color = bgColor
     ) {
         Row(
-            modifier = Modifier.padding(14.dp),
+            modifier = Modifier.padding(16.dp),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(10.dp)
+            horizontalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             RadioButton(
                 selected = isSelected,
                 onClick = onClick,
                 colors = RadioButtonDefaults.colors(
                     selectedColor = Color(0xFF1E88E5),
-                    unselectedColor = Color.White.copy(alpha = 0.4f)
-                )
+                    unselectedColor = Color.White.copy(alpha = 0.3f)
+                ),
+                modifier = Modifier.size(20.dp)
             )
-            Column {
+            Column(
+                verticalArrangement = Arrangement.spacedBy(4.dp)
+            ) {
                 Text(
                     text = label,
-                    fontSize = 14.sp,
+                    fontSize = 15.sp,
                     fontWeight = FontWeight.Bold,
                     color = Color.White
                 )
                 Text(
                     text = subtitle,
-                    fontSize = 11.sp,
+                    fontSize = 12.sp,
                     color = Color.White.copy(alpha = 0.5f),
-                    lineHeight = 14.sp
+                    lineHeight = 16.sp
                 )
             }
         }

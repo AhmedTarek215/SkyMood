@@ -116,14 +116,23 @@ class AlertWorker(
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
 
+        val contentText = if (temp.isNotEmpty()) {
+            "It's currently $temp with $description."
+        } else {
+            "Weather alert active for your area. Check connection for live updates."
+        }
+
+        val bigText = if (temp.isNotEmpty()) {
+            "Hi there! The current weather in $cityName is $temp with $description.\nStay safe and have a great day!"
+        } else {
+            "Hi! A weather alert is active for $cityName. We couldn't fetch live data right now, so please check your internet connection for the latest updates.\nStay safe!"
+        }
+
         val notification = NotificationCompat.Builder(context, CHANNEL_ID)
             .setSmallIcon(R.drawable.ic_bell_blue)
-            .setContentTitle("⛅ Weather Update for $cityName")
-            .setContentText("It's currently $temp with $description.")
-            .setStyle(
-                NotificationCompat.BigTextStyle()
-                .bigText("Hi there! The current weather in $cityName is $temp with $description.\nStay safe and have a great day!")
-            )
+            .setContentTitle("⛅ Weather Alert: $cityName")
+            .setContentText(contentText)
+            .setStyle(NotificationCompat.BigTextStyle().bigText(bigText))
             .setPriority(NotificationCompat.PRIORITY_HIGH)
             .setCategory(NotificationCompat.CATEGORY_ALARM)
             .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
@@ -179,14 +188,23 @@ class AlertWorker(
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
 
+        val alarmContentText = if (temp.isNotEmpty()) {
+            "It's $temp and $description."
+        } else {
+            "Weather alert active. Tap to view details."
+        }
+
+        val alarmBigText = if (temp.isNotEmpty()) {
+            "Wake up! The weather in $cityName is currently $temp with $description.\nTap to dismiss the alarm."
+        } else {
+            "A scheduled weather alarm is active for $cityName. Please check your connection for live weather details.\nTap to dismiss."
+        }
+
         val notification = NotificationCompat.Builder(context, ALARM_CHANNEL_ID)
             .setSmallIcon(R.drawable.ic_bell_blue)
             .setContentTitle("🚨 Weather Alarm: $cityName")
-            .setContentText("It is $temp and $description.")
-            .setStyle(
-                NotificationCompat.BigTextStyle()
-                .bigText("Wake up! The weather in $cityName is currently $temp with $description.\nTap to dismiss the alarm.")
-            )
+            .setContentText(alarmContentText)
+            .setStyle(NotificationCompat.BigTextStyle().bigText(alarmBigText))
             .setPriority(NotificationCompat.PRIORITY_HIGH)
             .setCategory(NotificationCompat.CATEGORY_ALARM)
             .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)

@@ -15,10 +15,16 @@ import com.google.android.gms.location.Priority
 import com.google.android.gms.tasks.CancellationTokenSource
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import com.example.skymood.data.settings.SettingsPreferencesManager
+import kotlinx.coroutines.flow.catch
 
 class HomeViewModel(
     private val repository: WeatherRepository,
@@ -26,19 +32,16 @@ class HomeViewModel(
     application: Application
 ) : AndroidViewModel(application) {
 
+    private val _uiState = MutableStateFlow<WeatherUiState>(WeatherUiState.Loading)
+    val uiState: StateFlow<WeatherUiState> = _uiState.asStateFlow()
+
+    private val _uiEvent = MutableSharedFlow<WeatherUiEvent>()
+    val uiEvent: SharedFlow<WeatherUiEvent> = _uiEvent.asSharedFlow()
+
     val weatherData: StateFlow<WeatherResponse?> = repository.weatherState
 
     private val _location = MutableStateFlow<Pair<Double, Double>?>(null)
     val location: StateFlow<Pair<Double, Double>?> = _location
-
-    private val _isLoading = MutableStateFlow(false)
-    val isLoading: StateFlow<Boolean> = _isLoading
-
-    private val _errorMessage = MutableStateFlow<String?>(null)
-    val errorMessage: StateFlow<String?> = _errorMessage
-
-    private val _isOffline = MutableStateFlow(false)
-    val isOffline: StateFlow<Boolean> = _isOffline
 
     private val _isCurrentLocationHome = MutableStateFlow(true)
 
@@ -51,8 +54,7 @@ class HomeViewModel(
     @SuppressLint("MissingPermission")
     fun fetchGpsLocation() {
         viewModelScope.launch {
-            _isLoading.value = true
-            _errorMessage.value = null
+            _uiState.value = WeatherUiState.Loading
             try {
                 val locationRequest = com.google.android.gms.location.LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, 5000L).build()
                 val builder = com.google.android.gms.location.LocationSettingsRequest.Builder().addLocationRequest(locationRequest)
@@ -77,21 +79,21 @@ class HomeViewModel(
                             _isCurrentLocationHome.value = true
                             fetchWeather(last.latitude, last.longitude, true)
                         } else {
-                            _isLoading.value = false
-                            _errorMessage.value = "Could not get GPS location. Please try again outside."
+                            _uiState.value = WeatherUiState.Error("Could not get GPS location. Please try again outside.")
+                            _uiEvent.emit(WeatherUiEvent.ShowError("Could not get GPS location. Please try again outside."))
                         }
                     }
                 } catch (e: Exception) {
-                    _isLoading.value = false
                     if (e is com.google.android.gms.common.api.ResolvableApiException) {
-                        _errorMessage.value = "RESOLUTION_REQUIRED"
+                        _uiEvent.emit(WeatherUiEvent.ShowError("RESOLUTION_REQUIRED"))
                     } else {
-                        _errorMessage.value = "GPS settings error: ${e.message}"
+                        _uiState.value = WeatherUiState.Error("GPS settings error: ${e.message}")
+                        _uiEvent.emit(WeatherUiEvent.ShowError("GPS settings error: ${e.message}"))
                     }
                 }
             } catch (e: Exception) {
-                _isLoading.value = false
-                _errorMessage.value = "GPS error: ${e.message}"
+                _uiState.value = WeatherUiState.Error("GPS error: ${e.message}")
+                _uiEvent.emit(WeatherUiEvent.ShowError("GPS error: ${e.message}"))
             }
         }
     }
@@ -107,7 +109,7 @@ class HomeViewModel(
 
     private fun fetchWeather(lat: Double, lon: Double, isHomeLocation: Boolean = true) {
         viewModelScope.launch {
-            _isLoading.value = true
+            _uiState.value = WeatherUiState.Loading
             try {
                 val tempPref = preferencesManager.temperatureUnitStream.first()
                 val langPref = preferencesManager.appLanguageStream.first()
@@ -118,12 +120,22 @@ class HomeViewModel(
                     else -> "standard"
                 }
 
-                val offline = repository.fetchWeather(lat, lon, Constants.WEATHER_API_KEY, unitParam, langPref, isHomeLocation)
-                _isOffline.value = offline
+                repository.fetchWeatherFlow(lat, lon, Constants.WEATHER_API_KEY, unitParam, langPref, isHomeLocation)
+                    .catch { e ->
+                        _uiState.value = WeatherUiState.Error(e.message ?: "Unknown Error")
+                        _uiEvent.emit(WeatherUiEvent.ShowError(e.message ?: "Unknown Error"))
+                    }
+                    .collectLatest { response ->
+                        if (response != null) {
+                            _uiState.value = WeatherUiState.Success(response, isOffline = false) // isOffline logic can be improved if repository returns it
+                        } else {
+                            _uiState.value = WeatherUiState.Error("No data found")
+                        }
+                    }
             } catch (e: Exception) {
-                _errorMessage.value = "Weather fetch error: ${e.message}"
+                _uiState.value = WeatherUiState.Error("Weather fetch error: ${e.message}")
+                _uiEvent.emit(WeatherUiEvent.ShowError("Weather fetch error: ${e.message}"))
             }
-            _isLoading.value = false
         }
     }
 }

@@ -1,11 +1,6 @@
 package com.example.skymood.presentation
 
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.Notifications
-import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -16,7 +11,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
@@ -33,7 +27,7 @@ import com.example.skymood.data.weather.WeatherRepository
 import com.example.skymood.data.database.WeatherDatabase
 import com.example.skymood.data.weather.datasource.local.WeatherLocalDataSource
 import com.example.skymood.data.weather.datasource.remote.WeatherRemoteDataSource
-import com.example.skymood.presentation.home.HomeScreen
+import com.example.skymood.presentation.home.view.HomeScreen
 import com.example.skymood.presentation.home.viewmodel.HomeViewModel
 import com.example.skymood.presentation.home.viewmodel.HomeViewModelFactory
 import com.example.skymood.presentation.map.MapPickerScreen
