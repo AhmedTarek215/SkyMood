@@ -99,6 +99,15 @@
     <string name="location_dialog_gps">استخدام GPS</string>
     <string name="location_dialog_map">الاختيار من الخريطة</string>
 
+    <!-- Location Permission Rationale -->
+    <string name="location_rationale_title">إذن الموقع مطلوب</string>
+    <string name="location_rationale_message">يتطلب التطبيق الوصول إلى الموقع لتقديم معلومات دقيقة عن الطقس في مكانك الحالي.</string>
+    <string name="location_settings_title">تم رفض الإذن نهائيًا</string>
+    <string name="location_settings_message">لقد تم رفض إذن الوصول إلى الموقع نهائيًا. يرجى تفعيل الإذن من إعدادات النظام لتتمكن من استخدام ميزة الموقع التلقائي.</string>
+    <string name="location_settings_button">الذهاب للإعدادات</string>
+    <string name="location_permission_retry">حاول مرة أخرى</string>
+    <string name="location_permission_skip">تخطي</string>
+
     <!-- Notifications & Alarms -->
     <string name="notification_alert_active">تنبيه الطقس نشط. تحقق من الاتصال للحصول على التحديثات.</string>
     <string name="notification_weather_update">⛅ تنبيه الطقس: %s</string>

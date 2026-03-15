@@ -25,6 +25,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.app.ActivityCompat
+import android.content.Intent
+import android.net.Uri
+import android.provider.Settings
 import androidx.core.content.ContextCompat
 import androidx.compose.ui.res.stringResource
 import com.example.skymood.R
@@ -57,6 +61,16 @@ fun HomeScreen(
     val snackbarHostState = remember { SnackbarHostState() }
 
     var showLocationDialog by remember { mutableStateOf(false) }
+    var showRationaleDialog by remember { mutableStateOf(false) }
+    var showPermanentlyDeniedDialog by remember { mutableStateOf(false) }
+
+    fun openAppSettings(context: android.content.Context) {
+        val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
+            data = Uri.fromParts("package", context.packageName, null)
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK
+        }
+        context.startActivity(intent)
+    }
 
     val gpsResolutionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartIntentSenderForResult()
@@ -101,8 +115,25 @@ fun HomeScreen(
         contract = ActivityResultContracts.RequestMultiplePermissions()
     ) { result ->
         val granted = result.values.any { it }
-        if (granted && location == null) {
-            showLocationDialog = true
+        if (granted) {
+            if (location == null) {
+                showLocationDialog = true
+            }
+        } else {
+            val activity = context as Activity
+            val showRationale = ActivityCompat.shouldShowRequestPermissionRationale(
+                activity, Manifest.permission.ACCESS_FINE_LOCATION
+            ) || ActivityCompat.shouldShowRequestPermissionRationale(
+                activity, Manifest.permission.ACCESS_COARSE_LOCATION
+            )
+
+            if (showRationale) {
+                showRationaleDialog = true
+            } else {
+                // This could be second denial or "Don't ask again"
+                // We show the settings dialog if it's not the first time
+                showPermanentlyDeniedDialog = true
+            }
         }
     }
 
@@ -191,6 +222,59 @@ fun HomeScreen(
                 showLocationDialog = false
                 onNavigateToMap()
             }
+        )
+    }
+
+    if (showRationaleDialog) {
+        AlertDialog(
+            onDismissRequest = { showRationaleDialog = false },
+            title = { Text(stringResource(R.string.location_rationale_title)) },
+            text = { Text(stringResource(R.string.location_rationale_message)) },
+            confirmButton = {
+                Button(onClick = {
+                    showRationaleDialog = false
+                    permissionLauncher.launch(
+                        arrayOf(
+                            Manifest.permission.ACCESS_FINE_LOCATION,
+                            Manifest.permission.ACCESS_COARSE_LOCATION
+                        )
+                    )
+                }) {
+                    Text(stringResource(R.string.location_permission_retry))
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showRationaleDialog = false }) {
+                    Text(stringResource(R.string.location_permission_skip))
+                }
+            },
+            containerColor = Color(0xFF1E2836),
+            titleContentColor = Color.White,
+            textContentColor = Color.White.copy(alpha = 0.8f)
+        )
+    }
+
+    if (showPermanentlyDeniedDialog) {
+        AlertDialog(
+            onDismissRequest = { showPermanentlyDeniedDialog = false },
+            title = { Text(stringResource(R.string.location_settings_title)) },
+            text = { Text(stringResource(R.string.location_settings_message)) },
+            confirmButton = {
+                Button(onClick = {
+                    showPermanentlyDeniedDialog = false
+                    openAppSettings(context)
+                }) {
+                    Text(stringResource(R.string.location_settings_button))
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showPermanentlyDeniedDialog = false }) {
+                    Text(stringResource(R.string.location_permission_skip))
+                }
+            },
+            containerColor = Color(0xFF1E2836),
+            titleContentColor = Color.White,
+            textContentColor = Color.White.copy(alpha = 0.8f)
         )
     }
 

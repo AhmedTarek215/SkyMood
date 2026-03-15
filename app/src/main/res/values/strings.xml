@@ -98,6 +98,15 @@
     <string name="location_dialog_gps">Use GPS</string>
     <string name="location_dialog_map">Pick on Map</string>
 
+    <!-- Location Permission Rationale -->
+    <string name="location_rationale_title">Location Permission Required</string>
+    <string name="location_rationale_message">This app needs location access to provide accurate weather forecasts for your current area.</string>
+    <string name="location_settings_title">Permission Permanently Denied</string>
+    <string name="location_settings_message">Location permission is permanently denied. Please enable it in the app settings to use GPS-based weather updates.</string>
+    <string name="location_settings_button">Go to Settings</string>
+    <string name="location_permission_retry">Try Again</string>
+    <string name="location_permission_skip">Skip</string>
+
     <!-- Notifications & Alarms -->
     <string name="notification_alert_active">Weather alert active for your area. Check connection for live updates.</string>
     <string name="notification_weather_update">⛅ Weather Alert: %s</string>
