@@ -1,4 +1,4 @@
-package com.example.skymood.presentation.map
+package com.example.skymood.presentation.map.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider

@@ -31,9 +31,9 @@ import com.example.skymood.data.weather.datasource.remote.WeatherRemoteDataSourc
 import com.example.skymood.presentation.home.view.HomeScreen
 import com.example.skymood.presentation.home.viewmodel.HomeViewModel
 import com.example.skymood.presentation.home.viewmodel.HomeViewModelFactory
-import com.example.skymood.presentation.map.MapPickerScreen
-import com.example.skymood.presentation.map.MapPickerViewModel
-import com.example.skymood.presentation.map.MapPickerViewModelFactory
+import com.example.skymood.presentation.map.view.MapPickerScreen
+import com.example.skymood.presentation.map.viewmodel.MapPickerViewModel
+import com.example.skymood.presentation.map.viewmodel.MapPickerViewModelFactory
 import com.example.skymood.presentation.favorites.view.FavoritesScreen
 import com.example.skymood.presentation.favorites.view.FavoriteForecastScreen
 import com.example.skymood.presentation.favorites.viewmodel.FavoritesViewModel

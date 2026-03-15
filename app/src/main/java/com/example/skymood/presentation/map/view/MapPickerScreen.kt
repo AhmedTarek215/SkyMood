@@ -1,4 +1,4 @@
-package com.example.skymood.presentation.map
+package com.example.skymood.presentation.map.view
 
 import android.content.Context
 import androidx.compose.foundation.background
@@ -29,6 +29,7 @@ import com.example.skymood.R
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
+import com.example.skymood.presentation.map.viewmodel.MapPickerViewModel
 import org.osmdroid.config.Configuration
 import org.osmdroid.events.MapEventsReceiver
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory
