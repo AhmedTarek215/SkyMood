@@ -4,7 +4,7 @@ import com.example.skymood.data.weather.model.WeatherResponse
 
 sealed class WeatherUiState {
     object Loading : WeatherUiState()
-    data class Success(val data: WeatherResponse, val isOffline: Boolean = false) : WeatherUiState()
+    data class Success(val data: WeatherResponse, val isOffline: Boolean = false, val windUnit: String = "m/s", val temperatureUnit: String = "celsius") : WeatherUiState()
     data class Error(val message: String) : WeatherUiState()
 }
 

@@ -15,10 +15,12 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.platform.LocalContext
+import com.example.skymood.R
 import com.example.skymood.data.database.FavoriteEntity
 import com.example.skymood.presentation.favorites.viewmodel.FavoritesViewModel
 import com.example.skymood.utils.NetworkUtils
@@ -42,8 +44,8 @@ fun FavoritesScreen(
         AlertDialog(
             onDismissRequest = { favoriteToDelete = null },
             icon = { Icon(Icons.Default.Warning, contentDescription = "Warning") },
-            title = { Text("Remove from Favorites") },
-            text = { Text("Are you sure you want to remove ${favoriteToDelete?.cityName} from favorites?") },
+            title = { Text(stringResource(R.string.favorites_delete_title)) },
+            text = { Text(stringResource(R.string.favorites_delete_message, favoriteToDelete?.cityName ?: "")) },
             confirmButton = {
                 TextButton(
                     onClick = {
@@ -51,14 +53,14 @@ fun FavoritesScreen(
                         favoriteToDelete = null
                     }
                 ) {
-                    Text("Yes", color = Color.Red)
+                    Text(stringResource(R.string.favorites_delete_confirm), color = Color.Red)
                 }
             },
             dismissButton = {
                 TextButton(
                     onClick = { favoriteToDelete = null }
                 ) {
-                    Text("Cancel")
+                    Text(stringResource(R.string.favorites_cancel))
                 }
             }
         )
@@ -70,7 +72,7 @@ fun FavoritesScreen(
                 title = { 
                     Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
                         Text(
-                            text = "Saved Cities",
+                            text = stringResource(R.string.favorites_title),
                             color = Color.White,
                             fontWeight = FontWeight.Bold,
                             fontSize = 20.sp,
@@ -111,8 +113,9 @@ fun FavoritesScreen(
                             if (NetworkUtils.isNetworkAvailable(context)) {
                                 onNavigateToForecast(favorite.lat, favorite.lon) 
                             } else {
+                                val offlineMsg = context.getString(R.string.favorites_offline_message)
                                 scope.launch {
-                                    snackbarHostState.showSnackbar("You are currently offline. Cannot view forecast.")
+                                    snackbarHostState.showSnackbar(offlineMsg)
                                 }
                             }
                         },

@@ -1,5 +1,7 @@
 package com.example.skymood.presentation.settings.viewmodel
 
+import androidx.appcompat.app.AppCompatDelegate
+import androidx.core.os.LocaleListCompat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.skymood.data.settings.SettingsPreferencesManager
@@ -35,6 +37,10 @@ class SettingsViewModel(private val preferencesManager: SettingsPreferencesManag
     }
 
     fun setAppLanguage(lang: String) {
-        viewModelScope.launch { preferencesManager.saveAppLanguage(lang) }
+        viewModelScope.launch { 
+            preferencesManager.saveAppLanguage(lang) 
+            val localeList = LocaleListCompat.forLanguageTags(lang)
+            AppCompatDelegate.setApplicationLocales(localeList)
+        }
     }
 }

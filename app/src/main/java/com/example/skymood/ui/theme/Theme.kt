@@ -10,6 +10,9 @@ import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.material3.LocalUseFallbackRippleImplementation
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.runtime.CompositionLocalProvider
 
 private val DarkColorScheme = darkColorScheme(
     primary = Purple80,
@@ -23,6 +26,9 @@ private val LightColorScheme = lightColorScheme(
     tertiary = Pink40
 )
 
+
+
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SkyMoodTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
@@ -42,6 +48,10 @@ fun SkyMoodTheme(
     MaterialTheme(
         colorScheme = colorScheme,
         typography = Typography,
-        content = content
+        content = {
+            CompositionLocalProvider(LocalUseFallbackRippleImplementation provides true) {
+                content()
+            }
+        }
     )
 }

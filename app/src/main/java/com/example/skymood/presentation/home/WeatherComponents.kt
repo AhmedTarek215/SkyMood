@@ -13,6 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -38,6 +39,8 @@ fun getBackgroundGradient(weatherMain: String?): Brush {
 @Composable
 fun WeatherContentView(
     weatherData: WeatherResponse,
+    windUnitString: String,
+    temperatureUnitString: String,
     onChangeLocation: () -> Unit,
     pullRefreshState: androidx.compose.material3.pulltorefresh.PullToRefreshState,
     isOffline: Boolean,
@@ -46,10 +49,11 @@ fun WeatherContentView(
     val scrollState = rememberScrollState()
     val snackbarHostState = remember { SnackbarHostState() }
     
+    val offlineWarningText = stringResource(R.string.home_offline_warning)
     LaunchedEffect(isOffline) {
         if (isOffline) {
             snackbarHostState.showSnackbar(
-                message = "You are currently offline. Showing last known weather.",
+                message = offlineWarningText,
                 duration = SnackbarDuration.Long
             )
         }
@@ -88,13 +92,13 @@ fun WeatherContentView(
                         .padding(4.dp)
                 ) {
                     Icon(Icons.Default.LocationOn, null, tint = Color(0xFF4FC3F7), modifier = Modifier.size(14.dp))
-                    Text(" CURRENT LOCATION", fontSize = 10.sp, color = Color(0xFF4FC3F7), letterSpacing = 1.sp, fontWeight = FontWeight.SemiBold)
+                    Text(" " + stringResource(R.string.home_current_location), fontSize = 10.sp, color = Color(0xFF4FC3F7), letterSpacing = 1.sp, fontWeight = FontWeight.SemiBold)
                 }
             }
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            Text("$temp°C", fontSize = 80.sp, color = Color.White, fontWeight = FontWeight.ExtraBold, letterSpacing = (-2).sp)
+            Text("$temp$temperatureUnitString", fontSize = 80.sp, color = Color.White, fontWeight = FontWeight.ExtraBold, letterSpacing = (-2).sp)
             Text(dateText, fontSize = 16.sp, color = Color.White.copy(alpha = 0.9f))
             
             Spacer(modifier = Modifier.height(12.dp))
@@ -120,13 +124,13 @@ fun WeatherContentView(
             }
             
             Spacer(modifier = Modifier.height(8.dp))
-            Text("Feels like $feelsLike°C", fontSize = 14.sp, color = Color.White.copy(alpha = 0.7f))
+            Text(stringResource(R.string.home_feels_like, feelsLike), fontSize = 14.sp, color = Color.White.copy(alpha = 0.7f))
 
             Spacer(modifier = Modifier.height(16.dp))
 
             WeatherDetailsCard(
                 humidity = "$humidity%",
-                wind = "${"%.0f".format(windSpeed)} km/h",
+                wind = "${"%.0f".format(windSpeed)} $windUnitString",
                 pressure = "$pressure hPa",
                 clouds = "$clouds%"
             )
@@ -134,7 +138,7 @@ fun WeatherContentView(
             Spacer(modifier = Modifier.height(24.dp))
 
             Text(
-                "Hourly Forecast",
+                stringResource(R.string.home_hourly_forecast),
                 modifier = Modifier.fillMaxWidth().padding(start = 16.dp),
                 color = Color.White, fontWeight = FontWeight.Bold, fontSize = 18.sp
             )
@@ -160,7 +164,7 @@ fun WeatherContentView(
                             time = currentTime
                             add(Calendar.HOUR_OF_DAY, hourOffset) 
                         }
-                        val hourLabel = SimpleDateFormat("h a", Locale.ENGLISH).format(cal.time)
+                        val hourLabel = SimpleDateFormat("h a", Locale.getDefault()).format(cal.time)
                         val icon = if (hourOffset == 1) {
                             getWeatherIcon(current.weather.firstOrNull()?.main ?: "")
                         } else {
@@ -194,7 +198,7 @@ fun WeatherContentView(
             Spacer(modifier = Modifier.height(24.dp))
 
             Text(
-                "5-Day Forecast",
+                stringResource(R.string.home_5_day_forecast),
                 modifier = Modifier.fillMaxWidth().padding(start = 16.dp),
                 color = Color.White, fontWeight = FontWeight.Bold, fontSize = 18.sp
             )
@@ -212,6 +216,9 @@ fun WeatherContentView(
                 }
             }
 
+            val strToday = stringResource(R.string.day_today)
+            val strTomorrow = stringResource(R.string.day_tomorrow)
+
             Column(
                 modifier = Modifier.padding(16.dp),
                 verticalArrangement = Arrangement.spacedBy(12.dp)
@@ -223,7 +230,7 @@ fun WeatherContentView(
                         ?: (forecast.weather.firstOrNull()?.main ?: "")
                         
                     DailyItem(
-                        dayName = formatDayName(date),
+                        dayName = formatDayName(date, strToday, strTomorrow),
                         dateLabel = formatShortDate(date),
                         description = desc,
                         highTemp = temps.first,
@@ -252,12 +259,12 @@ fun WeatherDetailsCard(humidity: String, wind: String, pressure: String, clouds:
     ) {
         Column(modifier = Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
             Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                DetailItem("HUMIDITY", humidity, R.drawable.ic_humidity_blue, Modifier.weight(1f))
-                DetailItem("WIND",     wind,     R.drawable.ic_wind_blue, Modifier.weight(1f))
+                DetailItem(stringResource(R.string.weather_humidity), humidity, R.drawable.ic_humidity_blue, Modifier.weight(1f))
+                DetailItem(stringResource(R.string.weather_wind),     wind,     R.drawable.ic_wind_blue, Modifier.weight(1f))
             }
             Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                DetailItem("PRESSURE", pressure, R.drawable.ic_pressure_blue, Modifier.weight(1f))
-                DetailItem("CLOUDS",   clouds,   R.drawable.ic_clouds_blue, Modifier.weight(1f))
+                DetailItem(stringResource(R.string.weather_pressure), pressure, R.drawable.ic_pressure_blue, Modifier.weight(1f))
+                DetailItem(stringResource(R.string.weather_clouds),   clouds,   R.drawable.ic_clouds_blue, Modifier.weight(1f))
             }
         }
     }
@@ -361,29 +368,29 @@ fun DailyItem(dayName: String, dateLabel: String, description: String, highTemp:
 
 fun formatDisplayDate(dtTxt: String): String = try {
     SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.ENGLISH)
-        .parse(dtTxt)?.let { SimpleDateFormat("EEEE, dd MMM | hh:mm a", Locale.ENGLISH).format(it) } ?: dtTxt
+        .parse(dtTxt)?.let { SimpleDateFormat("EEEE, dd MMM | hh:mm a", Locale.getDefault()).format(it) } ?: dtTxt
 } catch (_: Exception) { dtTxt }
 
 fun formatHourFromDtTxt(dtTxt: String): String = try {
     SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.ENGLISH)
-        .parse(dtTxt)?.let { SimpleDateFormat("h a", Locale.ENGLISH).format(it) } ?: ""
+        .parse(dtTxt)?.let { SimpleDateFormat("h a", Locale.getDefault()).format(it) } ?: ""
 } catch (_: Exception) { "" }
 
-fun formatDayName(dateStr: String): String = try {
+fun formatDayName(dateStr: String, strToday: String, strTomorrow: String): String = try {
     val date = SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH).parse(dateStr)
     val today = Calendar.getInstance().apply { set(Calendar.HOUR_OF_DAY, 0); set(Calendar.MINUTE, 0); set(Calendar.SECOND, 0); set(Calendar.MILLISECOND, 0) }.time
     val tomorrow = Calendar.getInstance().apply { add(Calendar.DAY_OF_YEAR, 1); set(Calendar.HOUR_OF_DAY, 0); set(Calendar.MINUTE, 0); set(Calendar.SECOND, 0); set(Calendar.MILLISECOND, 0) }.time
     
     when (date) {
-        today -> "Today"
-        tomorrow -> "Tomorrow"
-        else -> SimpleDateFormat("EEEE", Locale.ENGLISH).format(date!!)
+        today -> strToday
+        tomorrow -> strTomorrow
+        else -> SimpleDateFormat("EEEE", Locale.getDefault()).format(date!!)
     }
 } catch (_: Exception) { dateStr }
 
 fun formatShortDate(dateStr: String): String = try {
     SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH)
-        .parse(dateStr)?.let { SimpleDateFormat("MMM dd", Locale.ENGLISH).format(it) } ?: dateStr
+        .parse(dateStr)?.let { SimpleDateFormat("MMM dd", Locale.getDefault()).format(it) } ?: dateStr
 } catch (_: Exception) { dateStr }
 
 fun getWeatherIcon(weatherMain: String): Int = when (weatherMain.lowercase()) {

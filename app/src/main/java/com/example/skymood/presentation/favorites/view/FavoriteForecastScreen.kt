@@ -12,8 +12,10 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.example.skymood.R
 import com.example.skymood.presentation.favorites.viewmodel.FavoriteForecastViewModel
 import com.example.skymood.presentation.home.WeatherContentView
 import com.example.skymood.presentation.home.getBackgroundGradient
@@ -29,6 +31,8 @@ fun FavoriteForecastScreen(
     val weatherData by viewModel.weatherData.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
     val errorMessage by viewModel.errorMessage.collectAsState()
+    val windUnit by viewModel.windUnit.collectAsState()
+    val temperatureUnit by viewModel.temperatureUnit.collectAsState()
 
     LaunchedEffect(Unit) {
         viewModel.fetchForecast(lat, lon)
@@ -41,10 +45,10 @@ fun FavoriteForecastScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Favorite Forecast", color = Color.White) },
+                title = { Text(stringResource(R.string.favorites_forecast_title), color = Color.White) },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Back", tint = Color.White)
+                        Icon(Icons.Default.ArrowBack, contentDescription = stringResource(R.string.favorites_forecast_back), tint = Color.White)
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
@@ -78,21 +82,28 @@ fun FavoriteForecastScreen(
                             verticalArrangement = Arrangement.spacedBy(16.dp)
                         ) {
                             Icon(Icons.Default.Refresh, null, tint = Color(0xFF4FC3F7), modifier = Modifier.size(48.dp))
-                            Text(errorMessage ?: "Error", color = Color.White, textAlign = TextAlign.Center)
+                            Text(errorMessage ?: stringResource(R.string.favorites_offline_message), color = Color.White, textAlign = TextAlign.Center)
                             Button(
                                 onClick = { viewModel.fetchForecast(lat, lon) },
                                 colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF1E88E5))
-                            ) { Text("Try Again") }
+                            ) { Text(stringResource(R.string.home_retry)) }
                         }
                     }
                 }
                 weatherData != null -> {
+                    val tempUnitText = when (temperatureUnit) {
+                        "fahrenheit" -> "°F"
+                        "kelvin" -> "K"
+                        else -> "°C"
+                    }
                     WeatherContentView(
                         weatherData = weatherData!!,
                         onChangeLocation = {}, 
                         pullRefreshState = pullRefreshState,
                         isOffline = false,
-                        showCurrentLocationLabel = false
+                        showCurrentLocationLabel = false,
+                        windUnitString = windUnit,
+                        temperatureUnitString = tempUnitText
                     )
                 }
             }

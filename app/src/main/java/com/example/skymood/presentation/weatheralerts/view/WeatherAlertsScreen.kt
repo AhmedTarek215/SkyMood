@@ -18,9 +18,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.skymood.R
 import com.example.skymood.data.database.AlertEntity
 import com.example.skymood.presentation.weatheralerts.viewmodel.WeatherAlertsViewModel
 import com.google.accompanist.permissions.*
@@ -69,13 +71,13 @@ fun WeatherAlertsScreen(
         ) {
             Spacer(modifier = Modifier.height(16.dp))
             Text(
-                text = "Weather Alerts",
+                text = stringResource(R.string.alerts_title),
                 fontSize = 28.sp,
                 fontWeight = FontWeight.Bold,
                 color = Color.White
             )
             Text(
-                text = "Manage your local storm and wind notifications",
+                text = stringResource(R.string.alerts_subtitle),
                 fontSize = 14.sp,
                 color = Color.White.copy(alpha = 0.5f),
                 modifier = Modifier.padding(top = 4.dp)
@@ -98,13 +100,13 @@ fun WeatherAlertsScreen(
                             fontSize = 48.sp
                         )
                         Text(
-                            text = "No alerts yet",
+                            text = stringResource(R.string.alerts_no_alerts_yet),
                             fontSize = 18.sp,
                             fontWeight = FontWeight.Medium,
                             color = Color.White.copy(alpha = 0.7f)
                         )
                         Text(
-                            text = "Tap + to create your first weather alert",
+                            text = stringResource(R.string.alerts_tap_to_create),
                             fontSize = 14.sp,
                             color = Color.White.copy(alpha = 0.4f)
                         )
@@ -141,11 +143,11 @@ fun WeatherAlertsScreen(
                         android.net.Uri.parse("package:${context.packageName}")
                     )
                     context.startActivity(intent)
-                    android.widget.Toast.makeText(context, "Please enable 'Display over other apps' to use Alarms.", android.widget.Toast.LENGTH_LONG).show()
+                    android.widget.Toast.makeText(context, context.getString(R.string.alerts_display_over_apps_warning), android.widget.Toast.LENGTH_LONG).show()
                 } else if (currentLocation != null) {
                     showAddDialog = true
                 } else {
-                    android.widget.Toast.makeText(context, "Waiting for location...", android.widget.Toast.LENGTH_SHORT).show()
+                    android.widget.Toast.makeText(context, context.getString(R.string.alerts_waiting_location), android.widget.Toast.LENGTH_SHORT).show()
                 }
             },
             modifier = Modifier
@@ -226,7 +228,7 @@ fun AlertCard(
                         modifier = Modifier.padding(top = 4.dp)
                     ) {
                         Text(
-                            text = if (isAlarm) "Alarm" else "Notification",
+                            text = if (isAlarm) stringResource(R.string.alerts_alarm) else stringResource(R.string.alerts_notification),
                             fontSize = 11.sp,
                             fontWeight = FontWeight.Medium,
                             color = badgeColor,
@@ -259,7 +261,7 @@ fun AlertCard(
                             modifier = Modifier.background(Color(0xFF243B5E))
                         ) {
                             DropdownMenuItem(
-                                text = { Text("Delete Alert", color = Color(0xFFEF5350)) },
+                                text = { Text(stringResource(R.string.alerts_delete_alert), color = Color(0xFFEF5350)) },
                                 onClick = { 
                                     onDelete()
                                     showMenu = false 
@@ -287,7 +289,7 @@ fun AlertCard(
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         Text(
-                            text = "START",
+                            text = stringResource(R.string.alerts_start).uppercase(Locale.getDefault()),
                             fontSize = 10.sp,
                             fontWeight = FontWeight.Bold,
                             color = Color.White.copy(alpha = 0.4f),
@@ -320,7 +322,7 @@ fun AlertCard(
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         Text(
-                            text = "END",
+                            text = stringResource(R.string.alerts_end).uppercase(Locale.getDefault()),
                             fontSize = 10.sp,
                             fontWeight = FontWeight.Bold,
                             color = Color.White.copy(alpha = 0.4f),

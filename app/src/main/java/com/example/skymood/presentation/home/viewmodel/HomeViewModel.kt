@@ -25,6 +25,8 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import com.example.skymood.data.settings.SettingsPreferencesManager
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
 
 class HomeViewModel(
     private val repository: WeatherRepository,
@@ -44,6 +46,29 @@ class HomeViewModel(
     val location: StateFlow<Pair<Double, Double>?> = _location
 
     private val _isCurrentLocationHome = MutableStateFlow(true)
+    
+    init {
+        observeSettingsChanges()
+    }
+
+    private fun observeSettingsChanges() {
+        viewModelScope.launch {
+            combine(
+                preferencesManager.temperatureUnitStream,
+                preferencesManager.windSpeedUnitStream,
+                preferencesManager.appLanguageStream
+            ) { temp, wind, lang -> 
+                Triple(temp, wind, lang)
+            }
+            .distinctUntilChanged()
+            .collectLatest {
+                // If we already have a location, refresh the data to apply new settings immediately
+                if (_location.value != null) {
+                    refreshData()
+                }
+            }
+        }
+    }
 
     fun setLocation(lat: Double, lon: Double, isHomeLocation: Boolean = true) {
         _location.value = Pair(lat, lon)
@@ -113,6 +138,7 @@ class HomeViewModel(
             try {
                 val tempPref = preferencesManager.temperatureUnitStream.first()
                 val langPref = preferencesManager.appLanguageStream.first()
+                val windPref = preferencesManager.windSpeedUnitStream.first()
                 
                 val unitParam = when (tempPref) {
                     "celsius" -> "metric"
@@ -127,7 +153,7 @@ class HomeViewModel(
                     }
                     .collectLatest { response ->
                         if (response != null) {
-                            _uiState.value = WeatherUiState.Success(response, isOffline = false) // isOffline logic can be improved if repository returns it
+                            _uiState.value = WeatherUiState.Success(response, isOffline = false, windUnit = windPref, temperatureUnit = tempPref) // isOffline logic can be improved if repository returns it
                         } else {
                             _uiState.value = WeatherUiState.Error("No data found")
                         }

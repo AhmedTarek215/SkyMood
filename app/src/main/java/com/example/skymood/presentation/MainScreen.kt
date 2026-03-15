@@ -22,6 +22,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import androidx.compose.ui.res.stringResource
 import com.example.skymood.R
 import com.example.skymood.data.weather.WeatherRepository
 import com.example.skymood.data.database.WeatherDatabase
@@ -47,11 +48,11 @@ import com.example.skymood.presentation.weatheralerts.viewmodel.WeatherAlertsVie
 import com.example.skymood.presentation.weatheralerts.viewmodel.WeatherAlertsViewModelFactory
 import com.example.skymood.data.settings.SettingsPreferencesManager
 
-sealed class Screen(val route: String, val title: String, val selectedIcon: Int, val unselectedIcon: Int) {
-    object Home : Screen("home", "HOME", R.drawable.ic_home_blue, R.drawable.ic_home_grey)
-    object Alerts : Screen("alerts", "ALERTS", R.drawable.ic_bell_blue, R.drawable.ic_bell_grey)
-    object Favorites : Screen("favorites", "FAVORITES", R.drawable.ic_heart_blue, R.drawable.ic_heart_grey)
-    object Settings : Screen("settings", "SETTINGS", R.drawable.ic_settings_blue, R.drawable.ic_settings_grey)
+sealed class Screen(val route: String, val titleResId: Int, val selectedIcon: Int, val unselectedIcon: Int) {
+    object Home : Screen("home", R.string.nav_home, R.drawable.ic_home_blue, R.drawable.ic_home_grey)
+    object Alerts : Screen("alerts", R.string.nav_alerts, R.drawable.ic_bell_blue, R.drawable.ic_bell_grey)
+    object Favorites : Screen("favorites", R.string.nav_favorites, R.drawable.ic_heart_blue, R.drawable.ic_heart_grey)
+    object Settings : Screen("settings", R.string.nav_settings, R.drawable.ic_settings_blue, R.drawable.ic_settings_grey)
 }
 
 @Composable
@@ -79,7 +80,7 @@ fun MainScreen() {
     val weatherData by homeViewModel.weatherData.collectAsState()
     
     LaunchedEffect(homeLocation, weatherData) {
-        val cityName = weatherData?.city?.name ?: "Current Location"
+        val cityName = weatherData?.city?.name ?: context.getString(R.string.home_current_location)
         homeLocation?.let { (lat, lon) ->
             weatherAlertsViewModel.setCurrentLocation(lat, lon, cityName)
         }
@@ -180,11 +181,11 @@ fun BottomNavigationBar(navController: NavHostController) {
                 icon = { 
                     Icon(
                         painter = androidx.compose.ui.res.painterResource(id = if (isSelected) screen.selectedIcon else screen.unselectedIcon), 
-                        contentDescription = screen.title,
+                        contentDescription = stringResource(id = screen.titleResId),
                         tint = Color.Unspecified
                     ) 
                 },
-                label = { Text(text = screen.title, fontSize = 10.sp, fontWeight = FontWeight.Bold) },
+                label = { Text(text = stringResource(id = screen.titleResId), fontSize = 10.sp, fontWeight = FontWeight.Bold) },
                 selected = isSelected,
                 onClick = {
                     navController.navigate(screen.route) {

@@ -12,12 +12,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import com.example.skymood.R
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -72,7 +74,7 @@ fun AlertSettingsDialog(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = "Alert Settings",
+                        text = stringResource(R.string.alerts_settings_title),
                         fontSize = 22.sp,
                         fontWeight = FontWeight.Bold,
                         color = Color.White
@@ -85,7 +87,7 @@ fun AlertSettingsDialog(
                 Spacer(modifier = Modifier.height(24.dp))
 
                 Text(
-                    text = "DURATION",
+                    text = stringResource(R.string.alerts_duration).uppercase(Locale.getDefault()),
                     fontSize = 12.sp,
                     fontWeight = FontWeight.Bold,
                     color = Color.White.copy(alpha = 0.4f),
@@ -104,7 +106,7 @@ fun AlertSettingsDialog(
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         Text(
-                            text = "START",
+                            text = stringResource(R.string.alerts_start).uppercase(Locale.getDefault()),
                             fontSize = 10.sp,
                             color = Color.White.copy(alpha = 0.4f),
                             letterSpacing = 1.sp
@@ -140,7 +142,7 @@ fun AlertSettingsDialog(
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         Text(
-                            text = "END",
+                            text = stringResource(R.string.alerts_end).uppercase(Locale.getDefault()),
                             fontSize = 10.sp,
                             color = Color.White.copy(alpha = 0.4f),
                             letterSpacing = 1.sp
@@ -168,7 +170,7 @@ fun AlertSettingsDialog(
                 Spacer(modifier = Modifier.height(28.dp))
 
                 Text(
-                    text = "ALERT TYPE",
+                    text = stringResource(R.string.alerts_type).uppercase(Locale.getDefault()),
                     fontSize = 12.sp,
                     fontWeight = FontWeight.Bold,
                     color = Color.White.copy(alpha = 0.4f),
@@ -182,16 +184,16 @@ fun AlertSettingsDialog(
                     horizontalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
                     AlertTypeOption(
-                        label = "Notification",
-                        subtitle = "Silent push\nalert",
+                        label = stringResource(R.string.alerts_notification),
+                        subtitle = stringResource(R.string.alerts_notification_desc),
                         isSelected = alertType == "NOTIFICATION",
                         onClick = { alertType = "NOTIFICATION" },
                         modifier = Modifier.weight(1f)
                     )
 
                     AlertTypeOption(
-                        label = "Alarm",
-                        subtitle = "Audio &\nvibration",
+                        label = stringResource(R.string.alerts_alarm),
+                        subtitle = stringResource(R.string.alerts_alarm_desc),
                         isSelected = alertType == "ALARM",
                         onClick = { alertType = "ALARM" },
                         modifier = Modifier.weight(1f)
@@ -205,10 +207,10 @@ fun AlertSettingsDialog(
                         val now = System.currentTimeMillis()
                         when {
                             startTimeMillis <= now -> {
-                                Toast.makeText(context, "Start time must be in the future", Toast.LENGTH_SHORT).show()
+                                Toast.makeText(context, context.getString(R.string.alerts_error_start_future), Toast.LENGTH_SHORT).show()
                             }
                             endTimeMillis <= startTimeMillis -> {
-                                Toast.makeText(context, "End time must be after start time", Toast.LENGTH_SHORT).show()
+                                Toast.makeText(context, context.getString(R.string.alerts_error_end_after_start), Toast.LENGTH_SHORT).show()
                             }
                             else -> {
                                 onSave(startTimeMillis, endTimeMillis, alertType)
@@ -224,7 +226,7 @@ fun AlertSettingsDialog(
                     )
                 ) {
                     Text(
-                        text = "Save Alert Settings",
+                        text = stringResource(R.string.alerts_save_settings),
                         fontSize = 16.sp,
                         fontWeight = FontWeight.Bold
                     )
@@ -237,7 +239,7 @@ fun AlertSettingsDialog(
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Text(
-                        text = "Discard Changes",
+                        text = stringResource(R.string.alerts_discard_changes),
                         fontSize = 14.sp,
                         color = Color.White.copy(alpha = 0.4f)
                     )
@@ -358,7 +360,7 @@ fun TimePickerDialog(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Text(
-                    text = "SET ALERT TIME",
+                    text = stringResource(R.string.alerts_set_time).uppercase(Locale.getDefault()),
                     fontSize = 14.sp,
                     fontWeight = FontWeight.Bold,
                     color = Color.White.copy(alpha = 0.6f),
@@ -395,7 +397,7 @@ fun TimePickerDialog(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     TextButton(onClick = onDismiss) {
-                        Text("Cancel", color = Color(0xFF4FC3F7), fontWeight = FontWeight.Bold)
+                        Text(stringResource(R.string.alerts_cancel), color = Color(0xFF4FC3F7), fontWeight = FontWeight.Bold)
                     }
                     Spacer(modifier = Modifier.width(8.dp))
                     Button(
@@ -415,7 +417,7 @@ fun TimePickerDialog(
                         colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF1E88E5)),
                         shape = RoundedCornerShape(8.dp)
                     ) {
-                        Text("OK", fontWeight = FontWeight.Bold)
+                        Text(stringResource(R.string.alerts_ok), fontWeight = FontWeight.Bold)
                     }
                 }
             }

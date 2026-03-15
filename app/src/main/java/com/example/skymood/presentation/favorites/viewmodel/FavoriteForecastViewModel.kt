@@ -23,6 +23,12 @@ class FavoriteForecastViewModel(
     private val _isLoading = MutableStateFlow(false)
     val isLoading: StateFlow<Boolean> = _isLoading
 
+    private val _windUnit = MutableStateFlow("m/s")
+    val windUnit: StateFlow<String> = _windUnit
+
+    private val _temperatureUnit = MutableStateFlow("celsius")
+    val temperatureUnit: StateFlow<String> = _temperatureUnit
+
     private val _errorMessage = MutableStateFlow<String?>(null)
     val errorMessage: StateFlow<String?> = _errorMessage
 
@@ -39,11 +45,16 @@ class FavoriteForecastViewModel(
                 val tempPref = settingsPreferencesManager.temperatureUnitStream.first()
                 val lang = settingsPreferencesManager.appLanguageStream.first()
                 
+                _temperatureUnit.value = tempPref
+                
                 val unitParam = when (tempPref) {
                     "celsius" -> "metric"
                     "fahrenheit" -> "imperial"
                     else -> "standard"
                 }
+                val windPref = settingsPreferencesManager.windSpeedUnitStream.first()
+                _windUnit.value = if (windPref == "mph") "mph" else "m/s"
+
                 val response = repository.fetchForecastForFavorite(lat, lon, Constants.WEATHER_API_KEY, unitParam, lang)
                 if (response != null) {
                     _weatherData.value = response

@@ -21,9 +21,11 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.skymood.R
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
@@ -94,7 +96,7 @@ fun MapPickerScreen(
                 }
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(
-                    "Pick Location",
+                    stringResource(R.string.map_pick_location),
                     fontSize = 22.sp,
                     fontWeight = FontWeight.Bold,
                     color = Color.White
@@ -103,7 +105,7 @@ fun MapPickerScreen(
 
             Text(
                 text = if (hasSelection) "Lat: ${"%.4f".format(selectedLat)}, Lon: ${"%.4f".format(selectedLon)}"
-                else "Tap on the map to select a location",
+                else stringResource(R.string.map_tap_instruction),
                 modifier = Modifier.padding(horizontal = 24.dp, vertical = 4.dp),
                 color = Color.White.copy(alpha = 0.7f),
                 fontSize = 14.sp
@@ -122,7 +124,7 @@ fun MapPickerScreen(
                     onSearch = { searchActive = false },
                     active = searchActive,
                     onActiveChange = { searchActive = it },
-                    placeholder = { Text("Search for a city") },
+                    placeholder = { Text(stringResource(R.string.map_search_hint)) },
                     leadingIcon = { Icon(Icons.Default.Search, contentDescription = "Search Icon") },
                     trailingIcon = {
                         if (searchActive || searchQuery.isNotEmpty()) {
@@ -237,7 +239,7 @@ fun MapPickerScreen(
             ) {
                 Icon(Icons.Default.Check, contentDescription = null, tint = Color.White)
                 Spacer(modifier = Modifier.width(8.dp))
-                Text("Confirm Location", fontWeight = FontWeight.Bold, fontSize = 16.sp)
+                Text(stringResource(R.string.map_confirm_location), fontWeight = FontWeight.Bold, fontSize = 16.sp)
             }
 
             Spacer(modifier = Modifier.height(24.dp))

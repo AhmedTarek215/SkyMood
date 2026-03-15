@@ -26,6 +26,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
+import androidx.compose.ui.res.stringResource
+import com.example.skymood.R
 import com.example.skymood.presentation.home.LocationSelectionDialog
 import com.example.skymood.presentation.home.WeatherContentView
 import com.example.skymood.presentation.home.getBackgroundGradient
@@ -38,6 +40,9 @@ import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.LocationSettingsRequest
 import com.google.android.gms.location.Priority
+import com.example.skymood.data.settings.SettingsPreferencesManager
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -110,9 +115,21 @@ fun HomeScreen(
         ) == PackageManager.PERMISSION_GRANTED
     }
 
+    val coroutineScope = rememberCoroutineScope()
+
     fun requestOrShowDialog() {
         if (hasLocationPermission()) {
-            showLocationDialog = true
+            coroutineScope.launch {
+                val prefs = SettingsPreferencesManager(context)
+                val method = prefs.locationMethodStream.first()
+                if (method == "gps") {
+                    viewModel.fetchGpsLocation()
+                } else if (method == "map") {
+                    onNavigateToMap()
+                } else {
+                    showLocationDialog = true
+                }
+            }
         } else {
             permissionLauncher.launch(
                 arrayOf(
@@ -125,7 +142,24 @@ fun HomeScreen(
 
     LaunchedEffect(Unit) {
         if (location == null) {
-            requestOrShowDialog()
+            val prefs = SettingsPreferencesManager(context)
+            val method = prefs.locationMethodStream.first()
+            if (method == "map") {
+                onNavigateToMap()
+            } else if (method == "gps") {
+                if (hasLocationPermission()) {
+                     viewModel.fetchGpsLocation()
+                } else {
+                     permissionLauncher.launch(
+                         arrayOf(
+                             Manifest.permission.ACCESS_FINE_LOCATION,
+                             Manifest.permission.ACCESS_COARSE_LOCATION
+                         )
+                     )
+                }
+            } else {
+                requestOrShowDialog()
+            }
         }
     }
 
@@ -167,7 +201,7 @@ fun HomeScreen(
                                 verticalArrangement = Arrangement.spacedBy(16.dp)
                             ) {
                                 CircularProgressIndicator(color = Color(0xFF4FC3F7))
-                                Text("Fetching weather…", color = Color.White.copy(alpha = 0.7f))
+                                Text(stringResource(R.string.home_fetching_weather), color = Color.White.copy(alpha = 0.7f))
                             }
                         }
                     }
@@ -187,12 +221,14 @@ fun HomeScreen(
                                     Button(
                                         onClick = { requestOrShowDialog() },
                                         colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF1E88E5))
-                                    ) { Text("Try Again") }
+                                    ) { Text(stringResource(R.string.home_try_again)) }
                                 }
                             }
                         } else if (weatherData != null) {
                             WeatherContentView(
                                 weatherData = weatherData!!,
+                                windUnitString = if (state.message.contains("mph")) stringResource(R.string.settings_mph) else stringResource(R.string.settings_mps), // Temporary fallback for offline state
+                                temperatureUnitString = "°C", // Temporary fallback
                                 onChangeLocation = { requestOrShowDialog() },
                                 pullRefreshState = pullRefreshState,
                                 isOffline = true
@@ -203,7 +239,7 @@ fun HomeScreen(
                                     Text(state.message, color = Color.White, textAlign = TextAlign.Center)
                                     Spacer(modifier = Modifier.height(16.dp))
                                     Button(onClick = { viewModel.refreshData() }) {
-                                        Text("Retry")
+                                        Text(stringResource(R.string.home_retry))
                                     }
                                 }
                             }
@@ -211,8 +247,16 @@ fun HomeScreen(
                     }
 
                     is WeatherUiState.Success -> {
+                        val windUnitText = if (state.windUnit == "mph") stringResource(R.string.settings_mph) else stringResource(R.string.settings_mps)
+                        val temperatureUnitText = when (state.temperatureUnit) {
+                            "fahrenheit" -> "°F"
+                            "kelvin" -> "K"
+                            else -> "°C"
+                        }
                         WeatherContentView(
                             weatherData = state.data,
+                            windUnitString = windUnitText,
+                            temperatureUnitString = temperatureUnitText,
                             onChangeLocation = { requestOrShowDialog() },
                             pullRefreshState = pullRefreshState,
                             isOffline = state.isOffline
@@ -241,16 +285,16 @@ fun ScreenNoLocation(onSelect: () -> Unit) {
         ) {
             Icon(Icons.Default.LocationOn, null, tint = Color(0xFF4FC3F7), modifier = Modifier.size(64.dp))
             Text(
-                "Set your location to view weather",
+                stringResource(R.string.home_set_location),
                 color = Color.White, fontSize = 18.sp,
                 fontWeight = FontWeight.Bold, textAlign = TextAlign.Center
             )
-            Text("Use GPS or pick from the map", color = Color.White.copy(alpha = 0.6f))
+            Text(stringResource(R.string.home_use_gps_or_map), color = Color.White.copy(alpha = 0.6f))
             Button(
                 onClick = { onSelect() },
                 colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF1E88E5)),
                 shape = RoundedCornerShape(12.dp)
-            ) { Text("Select Location") }
+            ) { Text(stringResource(R.string.home_select_location)) }
         }
     }
 }

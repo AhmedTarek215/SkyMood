@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">SkyMood</string>
+    <!-- Map Picker -->
+    <string name="map_search_hint">ابحث عن مدينة…</string>
+    <string name="map_confirm_location">تأكيد الموقع</string>
+    <string name="map_no_results">لا توجد نتائج</string>
+    <string name="map_searching">جاري البحث…</string>
+    <string name="map_pick_location">اختر الموقع</string>
+    <string name="map_tap_instruction">اضغط على الخريطة لاختيار الموقع</string>
+
+    <!-- Home Screen & Weather Content -->
+    <string name="home_fetching_weather">جاري جلب حالة الطقس…</string>
+    <string name="home_try_again">حاول مرة أخرى</string>
+    <string name="home_retry">إعادة المحاولة</string>
+    <string name="home_set_location">حدد موقعك لعرض الطقس</string>
+    <string name="home_use_gps_or_map">استخدم GPS أو اختر من الخريطة</string>
+    <string name="home_select_location">اختر الموقع</string>
+    <string name="home_offline_warning">أنت غير متصل بالإنترنت حالياً. يتم عرض آخر طقس معروف.</string>
+    <string name="home_current_location">الموقع الحالي</string>
+    <string name="home_feels_like">الإحساس %s°م</string>
+    <string name="home_hourly_forecast">التوقعات كل ساعة</string>
+    <string name="home_5_day_forecast">توقعات لمدة 5 أيام</string>
+    <string name="weather_humidity">الرطوبة</string>
+    <string name="weather_wind">الرياح</string>
+    <string name="weather_pressure">الضغط</string>
+    <string name="weather_clouds">الغيوم</string>
+    <string name="day_today">اليوم</string>
+    <string name="day_tomorrow">غداً</string>
+
+    <!-- Navigation & Bottom Bar -->
+    <string name="nav_home">الرئيسية</string>
+    <string name="nav_map">خريطة</string>
+    <string name="nav_favorites">المفضلة</string>
+    <string name="nav_alerts">تنبيهات</string>
+    <string name="nav_settings">إعدادات</string>
+
+    <!-- Favorites Screen -->
+    <string name="favorites_title">المفضلة</string>
+    <string name="favorites_delete_title">حذف المفضلة</string>
+    <string name="favorites_delete_message">هل أنت متأكد أنك تريد إزالة هذا الموقع من مفضلتك؟</string>
+    <string name="favorites_delete_confirm">حذف</string>
+    <string name="favorites_cancel">إلغاء</string>
+    <string name="favorites_offline_message">أنت غير متصل بالإنترنت ولا توجد بيانات محفوظة لهذا الموقع.</string>
+    <string name="favorites_forecast_title">توقعات المفضلة</string>
+    <string name="favorites_forecast_back">رجوع</string>
+
+    <!-- Alerts Screen -->
+    <string name="alerts_title">تنبيهات الطقس</string>
+    <string name="alerts_no_alerts">لا توجد تنبيهات نشطة للطقس.</string>
+    <string name="alerts_tap_plus">اضغط على زر + لإنشاء تنبيه.</string>
+    <string name="alerts_active_city">نشط في: %s</string>
+    <string name="alerts_subtitle">تحذيرات الطقس النشطة</string>
+    <string name="alerts_no_alerts_yet">لم يتم تعيين تنبيهات بعد.</string>
+    <string name="alerts_tap_to_create">اضغط على + لإضافة تنبيه.</string>
+    <string name="alerts_display_over_apps_warning">يرجى تفعيل "الظهور فوق التطبيقات الأخرى" لاستخدام المنبهات.</string>
+    <string name="alerts_waiting_location">في انتظار الموقع…</string>
+    <string name="alerts_delete_alert">حذف التنبيه</string>
+    
+    <!-- Alert Settings Dialog -->
+    <string name="alerts_settings_title">إعدادات التنبيه</string>
+    <string name="alerts_duration">المدة</string>
+    <string name="alerts_start">البداية</string>
+    <string name="alerts_end">النهاية</string>
+    <string name="alerts_type">نوع التنبيه</string>
+    <string name="alerts_notification">إشعار</string>
+    <string name="alerts_notification_desc">تنبيه\nصامت</string>
+    <string name="alerts_alarm">منبه</string>
+    <string name="alerts_alarm_desc">صوت\nواهتزاز</string>
+    <string name="alerts_save_settings">حفظ التنبيه</string>
+    <string name="alerts_discard_changes">تجاهل التغييرات</string>
+    <string name="alerts_set_time">ضبط الوقت</string>
+    <string name="alerts_cancel">إلغاء</string>
+    <string name="alerts_ok">موافق</string>
+    <string name="alerts_error_start_future">يجب أن يكون وقت البدء في المستقبل</string>
+    <string name="alerts_error_end_after_start">يجب أن يكون وقت الانتهاء بعد وقت البدء</string>
+
+    <!-- Settings Screen -->
+    <string name="settings_title">الإعدادات</string>
+    <string name="settings_location">الموقع</string>
+    <string name="settings_gps">GPS (تلقائي)</string>
+    <string name="settings_map">خريطة (يدوي)</string>
+    <string name="settings_temperature_units">وحدات الحرارة</string>
+    <string name="settings_celsius">مئوية (°م)</string>
+    <string name="settings_fahrenheit">فهرنهايت (°ف)</string>
+    <string name="settings_kelvin">كلفن (K)</string>
+    <string name="settings_wind_speed">سرعة الرياح</string>
+    <string name="settings_mps">متر في الثانية (m/s)</string>
+    <string name="settings_mph">ميل في الساعة (mph)</string>
+    <string name="settings_app_language">لغة التطبيق</string>
+    <string name="settings_english">English</string>
+    <string name="settings_arabic">العربية</string>
+    <string name="settings_english_desc">الإنجليزية الأمريكية</string>
+    <string name="settings_arabic_desc">العربية الفصحى</string>
+
+    <!-- Location Selection Dialog -->
+    <string name="location_dialog_title">تحديد الموقع مطلوب</string>
+    <string name="location_dialog_desc">يرجى تحديد كيف تريد توفير موقعك لتحديثات الطقس.</string>
+    <string name="location_dialog_gps">استخدام GPS</string>
+    <string name="location_dialog_map">الاختيار من الخريطة</string>
+
+    <!-- Notifications & Alarms -->
+    <string name="notification_alert_active">تنبيه الطقس نشط. تحقق من الاتصال للحصول على التحديثات.</string>
+    <string name="notification_weather_update">⛅ تنبيه الطقس: %s</string>
+    <string name="notification_weather_info">الحالة حالياً %1$s مع %2$s.</string>
+    <string name="notification_big_text_data">مرحباً! الطقس الحالي في %1$s هو %2$s مع %3$s.\nابق آمناً ونتمنى لك يوماً سعيداً!</string>
+    <string name="notification_big_text_no_data">مرحباً! هناك تنبيه طقس نشط لـ %s. لم نتمكن من جلب البيانات الحية حالياً، لذا يرجى التحقق من اتصالك بالإنترنت لأحدث التحديثات.\nابق آمناً!</string>
+    <string name="notification_dismiss">تجاهل</string>
+    
+    <!-- Alarm specific -->
+    <string name="alarm_title">🚨 منبه الطقس: %s</string>
+    <string name="alarm_content_data">الحالة %1$s و %2$s.</string>
+    <string name="alarm_content_no_data">تنبيه طقس نشط. اضغط للنزع.</string>
+    <string name="alarm_big_text_data">استيقظ! الطقس في %1$s حالياً %2$s مع %3$s.\nاضغط لإيقاف المنبه.</string>
+    <string name="alarm_big_text_no_data">منبه طقس مجدول نشط لـ %s. يرجى التحقق من الاتصال لتفاصيل الطقس.\nاضغط للإيقاف.</string>
+    <string name="alarm_overlay_title">منبه الطقس</string>
+    <string name="notification_overlay_title">تنبيه الطقس</string>
+</resources>

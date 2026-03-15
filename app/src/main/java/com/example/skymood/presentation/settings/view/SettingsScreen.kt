@@ -14,6 +14,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -31,7 +32,7 @@ fun SettingsScreen(viewModel: SettingsViewModel) {
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Settings", color = Color.White, fontWeight = FontWeight.Bold) },
+                title = { Text(stringResource(R.string.settings_title), color = Color.White, fontWeight = FontWeight.Bold) },
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent)
             )
         },
@@ -47,11 +48,11 @@ fun SettingsScreen(viewModel: SettingsViewModel) {
         ) {
             // Location Section
             SettingsSection(
-                title = "LOCATION",
+                title = stringResource(R.string.settings_location),
                 iconResId = R.drawable.ic_location_blue,
                 options = listOf(
-                    SettingsOption("GPS (automatic)", "gps"),
-                    SettingsOption("Map (manual)", "map")
+                    SettingsOption(stringResource(R.string.settings_gps), "gps"),
+                    SettingsOption(stringResource(R.string.settings_map), "map")
                 ),
                 selectedOption = locationMethod,
                 onOptionSelected = { viewModel.setLocationMethod(it) }
@@ -59,12 +60,12 @@ fun SettingsScreen(viewModel: SettingsViewModel) {
 
             // Temperature Units Section
             SettingsSection(
-                title = "TEMPERATURE UNITS",
+                title = stringResource(R.string.settings_temperature_units),
                 iconResId = R.drawable.ic_temprature_blue,
                 options = listOf(
-                    SettingsOption("Celsius (°C)", "celsius"),
-                    SettingsOption("Fahrenheit (°F)", "fahrenheit"),
-                    SettingsOption("Kelvin (K)", "kelvin")
+                    SettingsOption(stringResource(R.string.settings_celsius), "celsius"),
+                    SettingsOption(stringResource(R.string.settings_fahrenheit), "fahrenheit"),
+                    SettingsOption(stringResource(R.string.settings_kelvin), "kelvin")
                 ),
                 selectedOption = temperatureUnit,
                 onOptionSelected = { viewModel.setTemperatureUnit(it) }
@@ -72,11 +73,11 @@ fun SettingsScreen(viewModel: SettingsViewModel) {
 
             // Wind Speed Section
             SettingsSection(
-                title = "WIND SPEED",
+                title = stringResource(R.string.settings_wind_speed),
                 iconResId = R.drawable.ic_wind_blue,
                 options = listOf(
-                    SettingsOption("Meters per second (m/s)", "mps"),
-                    SettingsOption("Miles per hour (mph)", "mph")
+                    SettingsOption(stringResource(R.string.settings_mps), "mps"),
+                    SettingsOption(stringResource(R.string.settings_mph), "mph")
                 ),
                 selectedOption = windSpeedUnit,
                 onOptionSelected = { viewModel.setWindSpeedUnit(it) }
@@ -84,11 +85,11 @@ fun SettingsScreen(viewModel: SettingsViewModel) {
 
             // App Language Section
             SettingsSection(
-                title = "APP LANGUAGE",
+                title = stringResource(R.string.settings_app_language),
                 iconResId = R.drawable.ic_language_blue,
                 options = listOf(
-                    SettingsOption("English", "en", "US English"),
-                    SettingsOption("العربية", "ar", "Standard Arabic")
+                    SettingsOption(stringResource(R.string.settings_english), "en", stringResource(R.string.settings_english_desc)),
+                    SettingsOption(stringResource(R.string.settings_arabic), "ar", stringResource(R.string.settings_arabic_desc))
                 ),
                 selectedOption = appLanguage,
                 onOptionSelected = { viewModel.setAppLanguage(it) }
