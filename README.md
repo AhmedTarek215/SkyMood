@@ -1,39 +1,38 @@
 # SkyMood ⛅
 
-SkyMood is a modern, feature-rich weather forecasting application built with **Jetpack Compose** and **Kotlin**. It provides accurate real-time weather data, 5-day forecasts, and advanced weather alerting systems, all designed with a premium, dynamic UI.
+SkyMood is a modern, feature-rich weather forecasting application built with **Jetpack Compose** and **Kotlin**. It provides accurate real-time weather data, 5-day forecasts, and weather alerting systems, all designed with a dynamic UI.
 
 ---
 
-## 🌟 Features
+## Features
 
-### 📡 Weather Data
+### Weather Data
 - **Real-time Forecast**: Detailed current weather conditions.
-- **5-Day / 3-Hourly Forecast**: Plan ahead with granular weather data.
-- **Dynamic Backgrounds**: UI background changes based on current weather conditions (Clear, Clouds, Rain, etc.).
+- **5-Day / Hourly Forecast**: Plan ahead with granular weather data.
 
-### 📍 Location Management
+### Location Management
 - **Dual Location modes**: Choose between **GPS (Automatic)** for real-time tracking or **Map (Manual)** to pick any location globally.
 - **OpenStreetMap Integration**: Seamless map picking experience using OSMDroid.
 - **Favorites**: Save your frequent locations for quick access.
 
-### 🔔 Weather Alerts
+### Weather Alerts
 - **Notifications**: Subtle push alerts for weather updates.
 - **Alarms**: Audio and vibration alerts for critical weather warnings, featuring a custom overlay activity.
 - **Scheduling**: Plan alerts for specific durations with a user-friendly time picker.
 
-### ⚙️ Personalized Settings
+### Personalized Settings
 - **Temperature Units**: Support for Celsius (°C), Fahrenheit (°F), and Kelvin (K).
 - **Wind Speed Units**: Support for Meters per second (m/s) and Miles per hour (mph).
 - **Multi-language**: Fully localized in **English** and **Arabic** with proper RTL (Right-to-Left) support.
 - **Auto-Refresh**: Weather data automatically refreshes when units or language settings are changed.
 
-### 🌐 Offline Experience
+### Offline Experience
 - **Caching**: View the last known weather data even without an internet connection.
 - **Offline Safety**: Settings changes and favorite additions are smartly blocked when offline to prevent data inconsistency, providing clear user feedback via snackbars.
 
 ---
 
-## 🛠️ Tech Stack
+## Tech Stack
 
 - **UI**: [Jetpack Compose](https://developer.android.com/compose) (100% Declarative UI)
 - **Language**: [Kotlin](https://kotlinlang.org/)
@@ -49,7 +48,6 @@ SkyMood is a modern, feature-rich weather forecasting application built with **J
 
 ## 📂 Project Structure
 
-```text
 com.example.skymood
 ├── data
 │   ├── database      # Room DB, DAOs, and Entities
@@ -64,7 +62,6 @@ com.example.skymood
 │   └── weatheralerts # Alert system and Alarms
 ├── utils             # Network utilities and Constants
 └── MainActivity.kt   # App entry point with Locale support
-```
 
 ---
 
@@ -95,15 +92,3 @@ SkyMood maintains a robust test suite covering all critical layers:
 2. **Open in Android Studio**: Use the latest Hedgehog or later.
 3. **API Key**: Ensure a valid OpenWeatherMap API key is set in `utils/Constants.kt`.
 4. **Build**: Build the project using Gradle.
-
----
-
-## 🌍 Localization
-SkyMood values accessibility. The app supports:
-- **English** (US)
-- **Arabic** (Standard) with full RTL layout mirroring.
-
----
-
-## 🛡️ License
-Distributed under the MIT License. See `LICENSE` for more information.
