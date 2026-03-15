@@ -87,7 +87,16 @@ fun FavoritesScreen(
         },
         floatingActionButton = {
             FloatingActionButton(
-                onClick = onNavigateToAddFavorite,
+                onClick = {
+                    if (NetworkUtils.isNetworkAvailable(context)) {
+                        onNavigateToAddFavorite()
+                    } else {
+                        val offlineMsg = context.getString(R.string.favorites_offline_message)
+                        scope.launch {
+                            snackbarHostState.showSnackbar(offlineMsg)
+                        }
+                    }
+                },
                 containerColor = Color(0xFF1E88E5), // Blue FAB
                 contentColor = Color.White,
                 shape = RoundedCornerShape(16.dp)

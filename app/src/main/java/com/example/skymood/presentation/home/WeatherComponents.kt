@@ -47,17 +47,7 @@ fun WeatherContentView(
     showCurrentLocationLabel: Boolean = true
 ) {
     val scrollState = rememberScrollState()
-    val snackbarHostState = remember { SnackbarHostState() }
     
-    val offlineWarningText = stringResource(R.string.home_offline_warning)
-    LaunchedEffect(isOffline) {
-        if (isOffline) {
-            snackbarHostState.showSnackbar(
-                message = offlineWarningText,
-                duration = SnackbarDuration.Long
-            )
-        }
-    }
     val currentForecast = weatherData.list.firstOrNull()
     val cityName = weatherData.city.name
     val temp = currentForecast?.main?.temp?.toInt() ?: 0
@@ -240,11 +230,6 @@ fun WeatherContentView(
                 }
             }
         }
-
-        SnackbarHost(
-            hostState = snackbarHostState,
-            modifier = Modifier.align(Alignment.BottomCenter).padding(bottom = 16.dp)
-        )
     }
 }
 

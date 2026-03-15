@@ -10,9 +10,12 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -20,6 +23,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.skymood.R
 import com.example.skymood.presentation.settings.viewmodel.SettingsViewModel
+import com.example.skymood.utils.NetworkUtils
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -29,6 +34,20 @@ fun SettingsScreen(viewModel: SettingsViewModel) {
     val windSpeedUnit by viewModel.windSpeedUnit.collectAsState()
     val appLanguage by viewModel.appLanguage.collectAsState()
 
+    val context = LocalContext.current
+    val scope = rememberCoroutineScope()
+    val snackbarHostState = remember { SnackbarHostState() }
+
+    val onAction = { action: () -> Unit ->
+        if (NetworkUtils.isNetworkAvailable(context)) {
+            action()
+        } else {
+            scope.launch {
+                snackbarHostState.showSnackbar(context.getString(R.string.home_offline_warning))
+            }
+        }
+    }
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -36,6 +55,7 @@ fun SettingsScreen(viewModel: SettingsViewModel) {
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent)
             )
         },
+        snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
         containerColor = Color(0xFF0C1623) // Main background color for settings
     ) { paddingValues ->
         Column(
@@ -55,7 +75,7 @@ fun SettingsScreen(viewModel: SettingsViewModel) {
                     SettingsOption(stringResource(R.string.settings_map), "map")
                 ),
                 selectedOption = locationMethod,
-                onOptionSelected = { viewModel.setLocationMethod(it) }
+                onOptionSelected = { onAction { viewModel.setLocationMethod(it) } }
             )
 
             // Temperature Units Section
@@ -68,7 +88,7 @@ fun SettingsScreen(viewModel: SettingsViewModel) {
                     SettingsOption(stringResource(R.string.settings_kelvin), "kelvin")
                 ),
                 selectedOption = temperatureUnit,
-                onOptionSelected = { viewModel.setTemperatureUnit(it) }
+                onOptionSelected = { onAction { viewModel.setTemperatureUnit(it) } }
             )
 
             // Wind Speed Section
@@ -80,7 +100,7 @@ fun SettingsScreen(viewModel: SettingsViewModel) {
                     SettingsOption(stringResource(R.string.settings_mph), "mph")
                 ),
                 selectedOption = windSpeedUnit,
-                onOptionSelected = { viewModel.setWindSpeedUnit(it) }
+                onOptionSelected = { onAction { viewModel.setWindSpeedUnit(it) } }
             )
 
             // App Language Section
@@ -92,7 +112,7 @@ fun SettingsScreen(viewModel: SettingsViewModel) {
                     SettingsOption(stringResource(R.string.settings_arabic), "ar", stringResource(R.string.settings_arabic_desc))
                 ),
                 selectedOption = appLanguage,
-                onOptionSelected = { viewModel.setAppLanguage(it) }
+                onOptionSelected = { onAction { viewModel.setAppLanguage(it) } }
             )
 
             Spacer(modifier = Modifier.height(32.dp))

@@ -16,7 +16,7 @@
     <string name="home_set_location">حدد موقعك لعرض الطقس</string>
     <string name="home_use_gps_or_map">استخدم GPS أو اختر من الخريطة</string>
     <string name="home_select_location">اختر الموقع</string>
-    <string name="home_offline_warning">أنت غير متصل بالإنترنت حالياً. يتم عرض آخر طقس معروف.</string>
+    <string name="home_offline_warning">أنت غير متصل بالإنترنت. يرجى التحقق من اتصالك والمحاولة مرة أخرى</string>
     <string name="home_current_location">الموقع الحالي</string>
     <string name="home_feels_like">الإحساس %s°م</string>
     <string name="home_hourly_forecast">التوقعات كل ساعة</string>
@@ -41,7 +41,7 @@
     <string name="favorites_delete_message">هل أنت متأكد أنك تريد إزالة هذا الموقع من مفضلتك؟</string>
     <string name="favorites_delete_confirm">حذف</string>
     <string name="favorites_cancel">إلغاء</string>
-    <string name="favorites_offline_message">أنت غير متصل بالإنترنت ولا توجد بيانات محفوظة لهذا الموقع.</string>
+    <string name="favorites_offline_message">أنت غير متصل بالإنترنت. يرجى التحقق من اتصالك والمحاولة مرة أخرى</string>
     <string name="favorites_forecast_title">توقعات المفضلة</string>
     <string name="favorites_forecast_back">رجوع</string>
 

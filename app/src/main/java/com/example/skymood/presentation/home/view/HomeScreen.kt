@@ -140,6 +140,23 @@ fun HomeScreen(
         }
     }
 
+    val offlineMsg = stringResource(R.string.home_offline_warning)
+
+    // Automatically show snackbar if offline
+    LaunchedEffect(uiState) {
+        val isOffline = when (val state = uiState) {
+            is WeatherUiState.Error -> true
+            is WeatherUiState.Success -> state.isOffline
+            else -> false
+        }
+        if (isOffline) {
+            snackbarHostState.showSnackbar(
+                message = offlineMsg,
+                duration = SnackbarDuration.Long
+            )
+        }
+    }
+
     LaunchedEffect(Unit) {
         if (location == null) {
             val prefs = SettingsPreferencesManager(context)
@@ -231,7 +248,8 @@ fun HomeScreen(
                                 temperatureUnitString = "°C", // Temporary fallback
                                 onChangeLocation = { requestOrShowDialog() },
                                 pullRefreshState = pullRefreshState,
-                                isOffline = true
+                                isOffline = true,
+                                showCurrentLocationLabel = true
                             )
                         } else {
                             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {

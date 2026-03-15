@@ -15,7 +15,7 @@
     <string name="home_set_location">Set your location to view weather</string>
     <string name="home_use_gps_or_map">Use GPS or pick from the map</string>
     <string name="home_select_location">Select Location</string>
-    <string name="home_offline_warning">You are currently offline. Showing last known weather.</string>
+    <string name="home_offline_warning">You are offline. Please check your connection and try again</string>
     <string name="home_current_location">CURRENT LOCATION</string>
     <string name="home_feels_like">Feels like %s°C</string>
     <string name="home_hourly_forecast">Hourly Forecast</string>
@@ -40,7 +40,7 @@
     <string name="favorites_delete_message">Are you sure you want to remove this location from your favorites?</string>
     <string name="favorites_delete_confirm">Delete</string>
     <string name="favorites_cancel">Cancel</string>
-    <string name="favorites_offline_message">You are offline and no saved data is available for this location.</string>
+    <string name="favorites_offline_message">You are offline. Please check your connection and try again</string>
     <string name="favorites_forecast_title">Favorite Forecast</string>
     <string name="favorites_forecast_back">Back</string>
 
