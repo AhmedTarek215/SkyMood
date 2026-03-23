@@ -94,7 +94,7 @@ class FavoritesViewModelTest {
 
     @Test
     fun `favorites StateFlow emits repository data`() = runTest(testDispatcher) {
-        // Start collecting to activate stateIn
+        // Start collecting
         val job = launch { viewModel.favorites.collect {} }
 
         // Then

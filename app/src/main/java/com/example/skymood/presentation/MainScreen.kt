@@ -47,6 +47,7 @@ import com.example.skymood.presentation.weatheralerts.view.WeatherAlertsScreen
 import com.example.skymood.presentation.weatheralerts.viewmodel.WeatherAlertsViewModel
 import com.example.skymood.presentation.weatheralerts.viewmodel.WeatherAlertsViewModelFactory
 import com.example.skymood.data.settings.SettingsPreferencesManager
+import com.example.skymood.presentation.splash.SplashScreen
 
 sealed class Screen(val route: String, val titleResId: Int, val selectedIcon: Int, val unselectedIcon: Int) {
     object Home : Screen("home", R.string.nav_home, R.drawable.ic_home_blue, R.drawable.ic_home_grey)
@@ -92,7 +93,7 @@ fun MainScreen() {
         bottomBar = {
             val navBackStackEntry by navController.currentBackStackEntryAsState()
             val currentRoute = navBackStackEntry?.destination?.route
-            if (currentRoute != "map_picker" && currentRoute?.startsWith("favorite_forecast") != true) {
+            if (currentRoute != "splash" && currentRoute != "map_picker" && currentRoute?.startsWith("favorite_forecast") != true) {
                 BottomNavigationBar(navController = navController)
             }
         },
@@ -100,9 +101,18 @@ fun MainScreen() {
     ) { innerPadding ->
         NavHost(
             navController = navController,
-            startDestination = Screen.Home.route,
+            startDestination = "splash",
             modifier = Modifier.padding(innerPadding)
         ) {
+            composable("splash") {
+                SplashScreen(
+                    onSplashFinished = {
+                        navController.navigate(Screen.Home.route) {
+                            popUpTo("splash") { inclusive = true }
+                        }
+                    }
+                )
+            }
             composable(Screen.Home.route) {
                 HomeScreen(
                     viewModel = homeViewModel,
